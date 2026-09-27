@@ -20,6 +20,10 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
+import image from "../assets/images/image.jpg";
+import narayani from "../assets/images/narayani2.jpeg";
+
+
 /* =========================================================
    CATEGORY DATA
 ========================================================= */
@@ -28,8 +32,7 @@ const categories = [
   {
     title: "Nature",
     subtitle: "Wildlife, parks, rivers",
-    image:
-      "https://images.unsplash.com/photo-1549366021-9f761d450615?auto=format&fit=crop&w=900&q=85",
+    image: image,
     icon: PawPrint,
     iconBg: "bg-emerald-700",
     arrow: "text-emerald-700",
@@ -103,8 +106,7 @@ const popularPlaces = [
     location: "Bharatpur",
     rating: "4.6",
     reviews: "1.2k",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=85",
+    image:narayani
   },
   {
     title: "Bharatpur Museum",
@@ -582,8 +584,8 @@ const Home = () => {
                   }
                   aria-label={`Show ${place.title}`}
                   className={`h-1.5 rounded-full transition-all duration-300 ${activeSlide === index
-                      ? "w-8 bg-emerald-700"
-                      : "w-2 bg-slate-300 hover:bg-slate-400"
+                    ? "w-8 bg-emerald-700"
+                    : "w-2 bg-slate-300 hover:bg-slate-400"
                     }`}
                 />
               ))}

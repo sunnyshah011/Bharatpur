@@ -45,16 +45,16 @@ const Navbar = () => {
             path: "/ai-guides",
             icon: Sparkles,
         },
-        {
-            name: t("navbar.myTrips"),
-            path: "/my-trip",
-            icon: Bookmark,
-        },
-        {
-            name: t("navbar.review"),
-            path: "/review",
-            icon: Star,
-        },
+        // {
+        //     name: t("navbar.myTrips"),
+        //     path: "/my-trip",
+        //     icon: Bookmark,
+        // },
+        // {
+        //     name: t("navbar.review"),
+        //     path: "/review",
+        //     icon: Star,
+        // },
     ];
 
     const changeLanguage = (language) => {
