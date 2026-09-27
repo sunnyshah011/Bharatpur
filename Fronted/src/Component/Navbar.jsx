@@ -2,6 +2,9 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/react";
 import { useTranslation } from "react-i18next";
+import logo from "../assets/images/logo.jpeg"
+
+
 
 import {
     Menu,
@@ -9,8 +12,8 @@ import {
     Home,
     Map,
     Sparkles,
-    Bookmark,
-    Star,
+    // Bookmark,
+    // Star,
     Globe,
     ChevronDown,
 } from "lucide-react";
@@ -23,6 +26,7 @@ const Navbar = () => {
     const { t, i18n } = useTranslation();
 
     const [mobileMenu, setMobileMenu] = useState(false);
+
 
     const navItems = [
         {
@@ -75,13 +79,18 @@ const Navbar = () => {
                     className="flex items-center gap-3"
                 >
 
-                    <div className="relative flex h-12 w-12 items-center justify-center">
+                    <div className="relative flex h-15 w-15 items-center justify-center">
 
-                        <div className="absolute bottom-1 h-7 w-11 rotate-[-12deg] rounded-[50%] bg-emerald-700" />
+                        <img
+                            src={logo}
+                            alt="Bharatpur AI Logo"
+                            className="h-15 w-15 rounded-full object-cover"
+                        />
+                        {/* <div className="absolute bottom-1 h-7 w-11 rotate-[-12deg] rounded-[50%] bg-emerald-700" />
 
                         <div className="absolute left-3 top-0 h-9 w-5 rotate-[25deg] rounded-t-full rounded-br-full bg-yellow-400" />
 
-                        <div className="absolute bottom-1 left-4 h-5 w-5 rounded-tl-full bg-emerald-900" />
+                        <div className="absolute bottom-1 left-4 h-5 w-5 rounded-tl-full bg-emerald-900" /> */}
 
                     </div>
 
@@ -101,7 +110,7 @@ const Navbar = () => {
 
                 {/* ================= DESKTOP NAVIGATION ================= */}
 
-                <nav className="hidden items-center gap-1 xl:flex">
+                <nav className="hidden items-center gap-10 xl:flex">
 
                     {navItems.map((item) => {
 
@@ -115,8 +124,8 @@ const Navbar = () => {
                                 key={item.path}
                                 to={item.path}
                                 className={`relative flex items-center gap-2 px-3 py-6 text-sm font-medium transition 2xl:px-4 ${isActive
-                                        ? "text-emerald-700"
-                                        : "text-slate-600 hover:text-emerald-700"
+                                    ? "text-emerald-700"
+                                    : "text-slate-600 hover:text-emerald-700"
                                     }`}
                             >
 
