@@ -1,0 +1,16 @@
+{
+    "navbar": {
+        "home": "गृहपृष्ठ",
+        "explore": "अन्वेषण",
+        "planTrip": "मेरो यात्रा योजना",
+        "aiGuide": "AI गाइड",
+        "myTrips": "मेरा यात्राहरू",
+        "review": "समीक्षा"
+    },
+    "common": {
+        "language": "भाषा",
+        "english": "English",
+        "nepali": "नेपाली",
+        "hindi": "हिन्दी"
+    }
+}

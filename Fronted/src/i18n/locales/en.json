@@ -1,0 +1,17 @@
+{
+    "navbar": {
+        "home": "Home",
+        "explore": "Explore",
+        "planTrip": "Plan My Trip",
+        "aiGuide": "AI Guide",
+        "myTrips": "My Trips",
+        "review": "Review",
+        "signIn": "Get Started"
+    },
+    "common": {
+        "language": "Language",
+        "english": "English",
+        "nepali": "नेपाली",
+        "hindi": "हिन्दी"
+    }
+}

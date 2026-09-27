@@ -1,0 +1,311 @@
+{
+  "places": [
+    {
+      "id": "chitwan-national-park",
+      "name": "Chitwan National Park",
+      "location": "Bharatpur, Chitwan",
+      "googlePlaceId": "ChIJQ62jY-TulDkRxUfTb8UWiMc",
+      "latitude": 27.5291,
+      "longitude": 84.3542,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chitwan%20National%20Park(CNP).jpg",
+      "rating": 4.8,
+      "reviews": 2400,
+      "description": "A rich wildlife and nature experience with forests, wetlands, rivers, and opportunities for guided activities.",
+      "category": [
+        "Wildlife",
+        "Nature"
+      ],
+      "details": {
+        "bestFor": "Families, wildlife lovers",
+        "suggestedTime": "4–6 hours",
+        "cost": "Check current local fees",
+        "nearby": "Food • Hotels • River",
+        "review": "Beautiful experience for our family."
+      }
+    },
+    {
+      "id": "sauraha",
+      "name": "Sauraha",
+      "location": "Sauraha, Ratnanagar, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5819,
+      "longitude": 84.4931,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Sauraha%2CChitwan%20National%20Park.jpg",
+      "rating": 4.8,
+      "reviews": 1500,
+      "description": "A popular tourism destination in Chitwan known for wildlife, jungle experiences, river activities, hotels, restaurants, and local culture.",
+      "category": [
+        "Wildlife",
+        "Nature",
+        "Culture"
+      ],
+      "details": {
+        "bestFor": "Wildlife lovers, families, nature lovers",
+        "suggestedTime": "4–6 hours",
+        "cost": "Varies by activity",
+        "nearby": "Hotels • Restaurants • Jungle activities",
+        "review": "A great base for exploring Chitwan."
+      }
+    },
+    {
+      "id": "narayani-riverside",
+      "name": "Narayani Riverside",
+      "location": "Bharatpur, Chitwan",
+      "googlePlaceId": "",
+      "latitude": 27.6815,
+      "longitude": 84.4298,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Gaindakot%20and%20Bharatpur%20at%20Narayani%20River%2C%20Nepal%202020%20-1.jpg",
+      "rating": 4.7,
+      "reviews": 1200,
+      "description": "Enjoy beautiful sunset views, riverside walks, peaceful surroundings, and relaxing local experiences beside the Narayani River.",
+      "category": [
+        "Nature",
+        "Culture"
+      ],
+      "details": {
+        "bestFor": "Families, couples, photographers",
+        "suggestedTime": "1–3 hours",
+        "cost": "Usually free",
+        "nearby": "Restaurants • Riverside cafes",
+        "review": "Beautiful place for sunset."
+      }
+    },
+    {
+      "id": "maula-kalika-temple",
+      "name": "Maula Kalika Temple",
+      "location": "Gaindakot, Nawalpur, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.7115,
+      "longitude": 84.3926,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Maula%20Kalika.jpg",
+      "rating": 4.8,
+      "reviews": 1800,
+      "description": "A famous hilltop Hindu temple offering spiritual experiences, forest surroundings, and panoramic views of the Narayani River and surrounding landscape.",
+      "category": [
+        "Culture",
+        "Religion",
+        "Nature"
+      ],
+      "details": {
+        "bestFor": "Pilgrims, families, hikers, photographers",
+        "suggestedTime": "2–4 hours",
+        "cost": "Usually free",
+        "nearby": "Narayani River • Gaindakot • Viewpoints",
+        "review": "Peaceful temple with beautiful views."
+      }
+    },
+    {
+      "id": "bishazari-tal",
+      "name": "Bishazari Tal",
+      "location": "Bharatpur, Chitwan",
+      "googlePlaceId": "",
+      "latitude": 27.6102,
+      "longitude": 84.4075,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bishazari%20Tal%20of%20Nepal.jpg",
+      "rating": 4.6,
+      "reviews": 850,
+      "description": "A beautiful wetland area famous for birdwatching, peaceful surroundings, forests, and natural scenery.",
+      "category": [
+        "Nature",
+        "Wildlife"
+      ],
+      "details": {
+        "bestFor": "Nature lovers, birdwatchers",
+        "suggestedTime": "2–3 hours",
+        "cost": "Check current local fees",
+        "nearby": "Restaurants • Hotels",
+        "review": "A peaceful place for birdwatching."
+      }
+    },
+    {
+      "id": "tharu-culture",
+      "name": "Tharu Culture Experience",
+      "location": "Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5765,
+      "longitude": 84.3612,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tharu%20Cultural%20Program.JPG",
+      "rating": 4.9,
+      "reviews": 620,
+      "description": "Experience local Tharu culture, traditional food, architecture, music, dance, and community life.",
+      "category": [
+        "Culture",
+        "Food"
+      ],
+      "details": {
+        "bestFor": "Culture lovers, food lovers",
+        "suggestedTime": "2–4 hours",
+        "cost": "Varies by experience",
+        "nearby": "Food • Homestays",
+        "review": "A wonderful local cultural experience."
+      }
+    },
+    {
+      "id": "devghat",
+      "name": "Devghat Dham",
+      "location": "Devghat, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.7355,
+      "longitude": 84.3597,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Devghat%20nepal.jpg",
+      "rating": 4.7,
+      "reviews": 1100,
+      "description": "A major religious and cultural destination at the confluence of the Kali Gandaki and Trishuli rivers, known for temples, ashrams, and spiritual activities.",
+      "category": [
+        "Culture",
+        "Religion",
+        "Nature"
+      ],
+      "details": {
+        "bestFor": "Pilgrims, culture lovers, photographers",
+        "suggestedTime": "2–4 hours",
+        "cost": "Usually free",
+        "nearby": "Temples • Riverside • Ashrams",
+        "review": "A peaceful and spiritually significant destination."
+      }
+    },
+    {
+      "id": "chitwan-museum",
+      "name": "Chitwan Museum",
+      "location": "Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5298,
+      "longitude": 84.3535,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Tharu%20museum%20-%20panoramio.jpg",
+      "rating": 4.4,
+      "reviews": 320,
+      "description": "A cultural and educational destination where visitors can learn about the history, wildlife, people, and natural heritage of Chitwan.",
+      "category": [
+        "Culture",
+        "History",
+        "Education"
+      ],
+      "details": {
+        "bestFor": "Families, students, history lovers",
+        "suggestedTime": "1–2 hours",
+        "cost": "Check current entry fee",
+        "nearby": "Chitwan National Park • Sauraha",
+        "review": "Interesting place to learn about Chitwan."
+      }
+    },
+    {
+      "id": "elephant-breeding-centre",
+      "name": "Elephant Breeding Centre",
+      "location": "Sauraha, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5839,
+      "longitude": 84.5055,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Elephant%20Breeding%20Centre%2C%20Sauraha.jpg",
+      "rating": 4.4,
+      "reviews": 950,
+      "description": "A wildlife conservation destination where visitors can learn about elephant care, breeding, and conservation activities.",
+      "category": [
+        "Wildlife",
+        "Nature",
+        "Education"
+      ],
+      "details": {
+        "bestFor": "Families, wildlife lovers, students",
+        "suggestedTime": "1–2 hours",
+        "cost": "Check current entry fee",
+        "nearby": "Sauraha • Chitwan National Park",
+        "review": "Educational experience for wildlife enthusiasts."
+      }
+    },
+    {
+      "id": "twenty-thousand-lakes",
+      "name": "20 Thousand Lakes",
+      "location": "Bharatpur, Chitwan",
+      "googlePlaceId": "",
+      "latitude": 27.6238,
+      "longitude": 84.4071,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/BishazariTalPano.jpg",
+      "rating": 4.6,
+      "reviews": 600,
+      "description": "A beautiful wetland and forest landscape in the Chitwan area, offering opportunities for birdwatching, photography, and nature exploration.",
+      "category": [
+        "Nature",
+        "Wildlife",
+        "Birdwatching"
+      ],
+      "details": {
+        "bestFor": "Birdwatchers, photographers, nature lovers",
+        "suggestedTime": "2–4 hours",
+        "cost": "Check current local fees",
+        "nearby": "Bishazari Tal • Forest areas",
+        "review": "A peaceful destination surrounded by nature."
+      }
+    },
+    {
+      "id": "meghauli",
+      "name": "Meghauli",
+      "location": "Meghauli, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5775,
+      "longitude": 84.2605,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Spotted%20Deers%20at%20Meghauli%2C%20Chitwan%20National%20Park.jpg",
+      "rating": 4.7,
+      "reviews": 500,
+      "description": "A peaceful Chitwan destination surrounded by forests, rivers, grasslands, wildlife, and traditional communities.",
+      "category": [
+        "Wildlife",
+        "Nature",
+        "Culture"
+      ],
+      "details": {
+        "bestFor": "Wildlife lovers, photographers, families",
+        "suggestedTime": "3–6 hours",
+        "cost": "Varies by activity",
+        "nearby": "Rapti River • Jungle areas • Resorts",
+        "review": "A quieter alternative for experiencing Chitwan's nature."
+      }
+    },
+    {
+      "id": "jalbire",
+      "name": "Jalbire Waterfall",
+      "location": "Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.6844,
+      "longitude": 84.2365,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Jalbire%20waterfall.jpg",
+      "rating": 4.5,
+      "reviews": 400,
+      "description": "A scenic waterfall destination surrounded by greenery and hills, popular for short trips and nature exploration.",
+      "category": [
+        "Nature",
+        "Adventure"
+      ],
+      "details": {
+        "bestFor": "Adventure lovers, young travelers, photographers",
+        "suggestedTime": "2–4 hours",
+        "cost": "Check current local fees",
+        "nearby": "Hills • Forest • Local villages",
+        "review": "A refreshing natural destination."
+      }
+    },
+    {
+      "id": "rapti-river",
+      "name": "Rapti River",
+      "location": "Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.5755,
+      "longitude": 84.4892,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Rapti%20river%20chitwan.jpg",
+      "rating": 4.7,
+      "reviews": 780,
+      "description": "A scenic river destination associated with wildlife, sunsets, jungle landscapes, canoeing, and peaceful riverside experiences.",
+      "category": [
+        "Nature",
+        "Wildlife",
+        "Adventure"
+      ],
+      "details": {
+        "bestFor": "Nature lovers, photographers, adventure lovers",
+        "suggestedTime": "1–3 hours",
+        "cost": "Varies by activity",
+        "nearby": "Sauraha • Jungle activities • Hotels",
+        "review": "Beautiful river scenery and sunsets."
+      }
+    }
+  ]
+}
