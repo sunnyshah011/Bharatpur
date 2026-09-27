@@ -284,6 +284,30 @@
       }
     },
     {
+      "id": "ranipokhari-bharatpur",
+      "name": "Ranipokhari",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.6417,
+      "longitude": 84.4315,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Ranipokhari.jpg",
+      "rating": 4.6,
+      "reviews": 350,
+      "description": "A peaceful historical pond in Bharatpur surrounded by greenery, offering a quiet escape for walking, photography, relaxation, and enjoying the local atmosphere.",
+      "category": [
+        "Hidden Places",
+        "Nature",
+        "Culture"
+      ],
+      "details": {
+        "bestFor": "Nature lovers, photographers, families",
+        "suggestedTime": "1–2 hours",
+        "cost": "Usually free",
+        "nearby": "Bharatpur • Local restaurants • City attractions",
+        "review": "A peaceful place away from the busy tourist areas."
+      }
+    },
+    {
       "id": "rapti-river",
       "name": "Rapti River",
       "location": "Chitwan, Nepal",
