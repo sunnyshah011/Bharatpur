@@ -19,31 +19,15 @@ import {
   useParams,
 } from "react-router-dom";
 
-import useNavigation from "../hooks/useNavigation";
+import placesData from "../data/places.json";
 
 /*
 |--------------------------------------------------------------------------
-| Google libraries
-|--------------------------------------------------------------------------
-|
-| IMPORTANT:
-| "places" has been removed.
-|
-| Google is now used only for:
-| - displaying the map
-| - calculating the navigation route
-|
-| Recommendations are loaded from our backend.
-|
-*/
-
-const GOOGLE_MAPS_LIBRARIES = ["routes"];
-
-/*
-|--------------------------------------------------------------------------
-| Map
+| GOOGLE MAPS
 |--------------------------------------------------------------------------
 */
+
+const GOOGLE_MAPS_LIBRARIES = [];
 
 const MAP_CONTAINER_STYLE = {
   width: "100%",
@@ -57,75 +41,309 @@ const DEFAULT_CENTER = {
 
 /*
 |--------------------------------------------------------------------------
-| Recommendation settings
+| FREE ROUTING
 |--------------------------------------------------------------------------
-|
-| These affect only the frontend display.
-| The actual place search is performed by the backend.
-|
 */
 
-const MAX_RECOMMENDATIONS = 12;
-const MIN_AHEAD_DISTANCE_METERS = 250;
+const OSRM_URL =
+  "https://router.project-osrm.org";
 
 /*
 |--------------------------------------------------------------------------
-| Recommendation categories
+| STATIC PLACES
 |--------------------------------------------------------------------------
 |
-| These are now only used for filtering and displaying results.
-| They are NOT sent to Google Places.
-|
+| Places come from places.json.
+| No Google Places API.
+| No recommendation API.
+|--------------------------------------------------------------------------
 */
 
-const RECOMMENDATION_CATEGORIES = [
-  {
+const MAX_STATIC_PLACES = 15;
+
+/*
+|--------------------------------------------------------------------------
+| RIDER CATEGORIES
+|--------------------------------------------------------------------------
+*/
+
+const PLACE_CATEGORIES = {
+  all: {
     key: "all",
     label: "All",
-    icon: "✨",
+    icon: "✦",
   },
-  {
-    key: "hotel",
-    label: "Hotels",
-    icon: "🏨",
+
+  fuel: {
+    key: "fuel",
+    label: "Fuel",
+    icon: "⛽",
   },
-  {
+
+  cafe: {
     key: "cafe",
-    label: "Cafés",
+    label: "Café",
     icon: "☕",
   },
-  {
-    key: "park",
-    label: "Parks & Gardens",
-    icon: "🌳",
-  },
-  {
-    key: "camping",
-    label: "Camping",
-    icon: "⛺",
-  },
-  {
+
+  food: {
     key: "food",
     label: "Food",
-    icon: "🍽️",
+    icon: "🍲",
   },
-  {
-    key: "attraction",
-    label: "Attractions",
-    icon: "📸",
+
+  restroom: {
+    key: "restroom",
+    label: "Restroom",
+    icon: "🚻",
   },
-];
+
+  medical: {
+    key: "medical",
+    label: "Medical",
+    icon: "🏥",
+  },
+
+  bank: {
+    key: "bank",
+    label: "ATM / Bank",
+    icon: "🏧",
+  },
+
+  charging: {
+    key: "charging",
+    label: "Charging",
+    icon: "🔋",
+  },
+
+  workshop: {
+    key: "workshop",
+    label: "Workshop",
+    icon: "🔧",
+  },
+
+  temple: {
+    key: "temple",
+    label: "Temple",
+    icon: "🛕",
+  },
+
+  park: {
+    key: "park",
+    label: "Park",
+    icon: "🌳",
+  },
+
+  view: {
+    key: "view",
+    label: "View",
+    icon: "🌄",
+  },
+};
 
 /*
 |--------------------------------------------------------------------------
-| Coordinate validation
+| CATEGORY ALIASES
 |--------------------------------------------------------------------------
 */
 
-function isValidCoordinate(
-  lat,
-  lng
-) {
+const CATEGORY_ALIASES = {
+  fuel: [
+    "fuel",
+    "petrol",
+    "petrol pump",
+    "gas station",
+    "gasstation",
+    "fuel station",
+    "fuelstation",
+    "pumps",
+  ],
+
+  cafe: [
+    "cafe",
+    "coffee",
+    "coffee shop",
+    "tea shop",
+    "bakery",
+  ],
+
+  food: [
+    "food",
+    "restaurant",
+    "eatery",
+    "dining",
+    "local food",
+    "food place",
+    "eat",
+  ],
+
+  restroom: [
+    "restroom",
+    "rest room",
+    "toilet",
+    "washroom",
+    "public toilet",
+    "bathroom",
+  ],
+
+  medical: [
+    "medical",
+    "hospital",
+    "clinic",
+    "pharmacy",
+    "health",
+    "medicine",
+    "medical center",
+  ],
+
+  bank: [
+    "atm",
+    "bank",
+    "cash",
+    "finance",
+    "banking",
+  ],
+
+  charging: [
+    "charging",
+    "ev charging",
+    "ev charger",
+    "electric charging",
+    "charging station",
+    "charger",
+  ],
+
+  workshop: [
+    "workshop",
+    "mechanic",
+    "motorcycle repair",
+    "motorcycle",
+    "bike repair",
+    "bike service",
+    "repair",
+    "puncture",
+    "tyre",
+    "tire",
+    "garage",
+    "service center",
+  ],
+
+  temple: [
+    "temple",
+    "gumba",
+    "monastery",
+    "shrine",
+    "mandir",
+  ],
+
+  park: [
+    "park",
+    "nature",
+    "forest",
+    "garden",
+    "green",
+    "jungle",
+  ],
+
+  view: [
+    "view",
+    "viewpoint",
+    "scenic",
+    "scenic view",
+    "lookout",
+    "sunset",
+    "lake",
+    "lakeside",
+    "riverside",
+  ],
+};
+
+/*
+|--------------------------------------------------------------------------
+| SMALL CATEGORY DISPLAY
+|--------------------------------------------------------------------------
+*/
+
+const CATEGORY_STYLE = {
+  fuel: {
+    label: "Fuel",
+    icon: "⛽",
+  },
+
+  cafe: {
+    label: "Café",
+    icon: "☕",
+  },
+
+  food: {
+    label: "Food",
+    icon: "🍲",
+  },
+
+  restroom: {
+    label: "Restroom",
+    icon: "🚻",
+  },
+
+  medical: {
+    label: "Medical",
+    icon: "🏥",
+  },
+
+  bank: {
+    label: "ATM / Bank",
+    icon: "🏧",
+  },
+
+  charging: {
+    label: "Charging",
+    icon: "🔋",
+  },
+
+  workshop: {
+    label: "Workshop",
+    icon: "🔧",
+  },
+
+  temple: {
+    label: "Temple",
+    icon: "🛕",
+  },
+
+  park: {
+    label: "Park",
+    icon: "🌳",
+  },
+
+  view: {
+    label: "View",
+    icon: "🌄",
+  },
+
+  hidden: {
+    label: "Hidden",
+    icon: "✨",
+  },
+
+  other: {
+    label: "Local",
+    icon: "📍",
+  },
+};
+
+/*
+|--------------------------------------------------------------------------
+| HELPERS
+|--------------------------------------------------------------------------
+*/
+
+function cleanText(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function isValidCoordinate(lat, lng) {
   return (
     Number.isFinite(lat) &&
     Number.isFinite(lng) &&
@@ -137,9 +355,305 @@ function isValidCoordinate(
   );
 }
 
+function getPlaceCoordinate(place) {
+  if (!place) {
+    return null;
+  }
+
+  let latitude =
+    Number(place.latitude);
+
+  let longitude =
+    Number(place.longitude);
+
+  if (
+    isValidCoordinate(
+      latitude,
+      longitude
+    )
+  ) {
+    return {
+      lat: latitude,
+      lng: longitude,
+    };
+  }
+
+  if (
+    place.coordinates &&
+    isValidCoordinate(
+      Number(place.coordinates.lat),
+      Number(place.coordinates.lng)
+    )
+  ) {
+    return {
+      lat:
+        Number(place.coordinates.lat),
+
+      lng:
+        Number(place.coordinates.lng),
+    };
+  }
+
+  const geoCoordinates =
+    place.locationPoint
+      ?.coordinates;
+
+  if (
+    Array.isArray(
+      geoCoordinates
+    ) &&
+    geoCoordinates.length >= 2
+  ) {
+    longitude =
+      Number(
+        geoCoordinates[0]
+      );
+
+    latitude =
+      Number(
+        geoCoordinates[1]
+      );
+
+    if (
+      isValidCoordinate(
+        latitude,
+        longitude
+      )
+    ) {
+      return {
+        lat: latitude,
+        lng: longitude,
+      };
+    }
+  }
+
+  latitude =
+    Number(place.lat);
+
+  longitude =
+    Number(place.lng);
+
+  if (
+    isValidCoordinate(
+      latitude,
+      longitude
+    )
+  ) {
+    return {
+      lat: latitude,
+      lng: longitude,
+    };
+  }
+
+  return null;
+}
+
+function getPlaceSearchText(place) {
+  const values = [
+    place?.name,
+    place?.title,
+    place?.description,
+    place?.category,
+    place?.categoryKeys,
+    place?.categories,
+    place?.hiddenPlaceType,
+    place?.location,
+    place?.formattedAddress,
+  ];
+
+  return cleanText(
+    values
+      .flat(Infinity)
+      .filter(Boolean)
+      .join(" ")
+  ).toLowerCase();
+}
+
 /*
 |--------------------------------------------------------------------------
-| Distance helpers
+| DETERMINE CATEGORY
+|--------------------------------------------------------------------------
+*/
+
+function detectPlaceCategory(place) {
+  const explicit =
+    cleanText(
+      place?.hiddenPlaceType
+    ).toLowerCase();
+
+  const searchText =
+    getPlaceSearchText(place);
+
+  /*
+   * Explicit hidden-place type first.
+   */
+
+  if (
+    explicit === "lake" ||
+    explicit === "lakeside"
+  ) {
+    return "view";
+  }
+
+  if (
+    explicit === "rest" ||
+    explicit === "resting"
+  ) {
+    return "restroom";
+  }
+
+  if (
+    explicit === "cafe" ||
+    explicit === "coffee"
+  ) {
+    return "cafe";
+  }
+
+  if (
+    explicit === "food" ||
+    explicit === "restaurant" ||
+    explicit === "local-food"
+  ) {
+    return "food";
+  }
+
+  if (
+    explicit === "hotel" ||
+    explicit === "stay" ||
+    explicit === "homestay"
+  ) {
+    return "other";
+  }
+
+  if (
+    explicit === "park" ||
+    explicit === "nature" ||
+    explicit === "forest"
+  ) {
+    return "park";
+  }
+
+  if (
+    explicit === "temple" ||
+    explicit === "gumba"
+  ) {
+    return "temple";
+  }
+
+  if (
+    explicit === "view" ||
+    explicit === "viewpoint"
+  ) {
+    return "view";
+  }
+
+  /*
+   * General text matching.
+   */
+
+  const categoryKeys =
+    Object.keys(
+      CATEGORY_ALIASES
+    );
+
+  for (
+    const categoryKey of categoryKeys
+  ) {
+    const aliases =
+      CATEGORY_ALIASES[
+        categoryKey
+      ];
+
+    const found =
+      aliases.some(
+        (alias) =>
+          searchText.includes(
+            alias
+          )
+      );
+
+    if (found) {
+      return categoryKey;
+    }
+  }
+
+  return "other";
+}
+
+/*
+|--------------------------------------------------------------------------
+| CATEGORY DATA
+|--------------------------------------------------------------------------
+*/
+
+function getCategoryDisplay(
+  category,
+  place
+) {
+  if (
+    place?.isHidden === true ||
+    place?.hiddenPlace === true
+  ) {
+    if (
+      category === "other"
+    ) {
+      return CATEGORY_STYLE.hidden;
+    }
+  }
+
+  return (
+    CATEGORY_STYLE[
+      category
+    ] ||
+    CATEGORY_STYLE.other
+  );
+}
+
+/*
+|--------------------------------------------------------------------------
+| DESCRIPTION
+|--------------------------------------------------------------------------
+*/
+
+function shortenDescription(
+  description
+) {
+  const text =
+    cleanText(
+      description
+    );
+
+  if (!text) {
+    return "A useful stop for your journey.";
+  }
+
+  /*
+   * Keep it concise.
+   */
+
+  const sentences =
+    text.split(
+      /(?<=[.!?])\s+/
+    );
+
+  const first =
+    sentences[0] || text;
+
+  if (
+    first.length <= 130
+  ) {
+    return first;
+  }
+
+  return `${first.slice(
+    0,
+    127
+  )}...`;
+}
+
+/*
+|--------------------------------------------------------------------------
+| DISTANCE
 |--------------------------------------------------------------------------
 */
 
@@ -148,40 +662,44 @@ function haversineDistanceMeters(
   to
 ) {
   if (!from || !to) {
-    return Number.POSITIVE_INFINITY;
+    return Infinity;
   }
 
-  const earthRadiusMeters =
+  const earthRadius =
     6371000;
 
-  const toRadians = (
-    degrees
+  const radians = (
+    value
   ) =>
-    (degrees * Math.PI) /
+    (value * Math.PI) /
     180;
 
   const lat1 =
-    toRadians(from.lat);
+    radians(from.lat);
 
   const lat2 =
-    toRadians(to.lat);
+    radians(to.lat);
 
   const deltaLat =
-    toRadians(
+    radians(
       to.lat - from.lat
     );
 
   const deltaLng =
-    toRadians(
+    radians(
       to.lng - from.lng
     );
 
   const a =
-    Math.sin(deltaLat / 2) **
+    Math.sin(
+      deltaLat / 2
+    ) **
       2 +
     Math.cos(lat1) *
       Math.cos(lat2) *
-      Math.sin(deltaLng / 2) **
+      Math.sin(
+        deltaLng / 2
+      ) **
         2;
 
   const c =
@@ -192,7 +710,7 @@ function haversineDistanceMeters(
     );
 
   return (
-    earthRadiusMeters * c
+    earthRadius * c
   );
 }
 
@@ -232,34 +750,178 @@ function formatDuration(
     return "--";
   }
 
-  const totalMinutes =
-    Math.round(
-      Number(milliseconds) /
-        60000
+  const minutes =
+    Math.max(
+      0,
+      Math.round(
+        Number(
+          milliseconds
+        ) / 60000
+      )
     );
 
-  if (totalMinutes < 60) {
-    return `${totalMinutes} min`;
+  if (minutes < 60) {
+    return `${minutes} min`;
   }
 
   const hours =
     Math.floor(
-      totalMinutes / 60
+      minutes / 60
     );
 
-  const minutes =
-    totalMinutes % 60;
+  const remaining =
+    minutes % 60;
 
-  if (minutes === 0) {
-    return `${hours} hr`;
-  }
-
-  return `${hours} hr ${minutes} min`;
+  return remaining === 0
+    ? `${hours} hr`
+    : `${hours} hr ${remaining} min`;
 }
 
 /*
 |--------------------------------------------------------------------------
-| Route geometry helpers
+| BUILD STATIC JOURNEY PLACES
+|--------------------------------------------------------------------------
+*/
+
+function buildStaticJourneyPlaces() {
+  const allPlaces =
+    Array.isArray(
+      placesData?.places
+    )
+      ? placesData.places
+      : [];
+
+  const validPlaces =
+    allPlaces.filter(
+      (place) =>
+        Boolean(
+          getPlaceCoordinate(
+            place
+          )
+        )
+    );
+
+  /*
+   * Put hidden places first,
+   * then other useful places.
+   */
+
+  const hiddenPlaces =
+    validPlaces.filter(
+      (place) =>
+        place?.isHidden === true ||
+        place?.hiddenPlace === true ||
+        Boolean(
+          place?.hiddenPlaceType
+        )
+    );
+
+  const normalPlaces =
+    validPlaces.filter(
+      (place) =>
+        !(
+          place?.isHidden === true ||
+          place?.hiddenPlace === true ||
+          Boolean(
+            place?.hiddenPlaceType
+          )
+        )
+    );
+
+  const ordered =
+    [
+      ...hiddenPlaces,
+      ...normalPlaces,
+    ];
+
+  const unique =
+    [];
+
+  const seen =
+    new Set();
+
+  for (
+    const place of ordered
+  ) {
+    const id =
+      String(
+        place?.id ??
+          place?._id ??
+          place?.placeId ??
+          `${place?.name}-${Math.random()}`
+      );
+
+    if (
+      seen.has(id)
+    ) {
+      continue;
+    }
+
+    seen.add(id);
+
+    const coordinates =
+      getPlaceCoordinate(
+        place
+      );
+
+    const category =
+      detectPlaceCategory(
+        place
+      );
+
+    const categoryData =
+      getCategoryDisplay(
+        category,
+        place
+      );
+
+    unique.push({
+      ...place,
+
+      id,
+
+      coordinates,
+
+      category,
+
+      categoryLabel:
+        categoryData.label,
+
+      categoryIcon:
+        categoryData.icon,
+
+      conciseDescription:
+        shortenDescription(
+          place?.description
+        ),
+
+      isHidden:
+        place?.isHidden ===
+          true ||
+        place?.hiddenPlace ===
+          true ||
+        Boolean(
+          place?.hiddenPlaceType
+        ),
+    });
+
+    if (
+      unique.length >=
+      MAX_STATIC_PLACES
+    ) {
+      break;
+    }
+  }
+
+  return unique;
+}
+
+const STATIC_JOURNEY_PLACES =
+  buildStaticJourneyPlaces();
+
+/*
+|--------------------------------------------------------------------------
+| ROUTE METRICS
 |--------------------------------------------------------------------------
 */
 
@@ -279,6 +941,7 @@ function buildRouteMetrics(
         lat: Number(
           point?.lat
         ),
+
         lng: Number(
           point?.lng
         ),
@@ -291,26 +954,27 @@ function buildRouteMetrics(
           )
       );
 
-  if (points.length < 2) {
+  if (
+    points.length < 2
+  ) {
     return null;
   }
 
-  const cumulativeMeters = [
-    0,
-  ];
+  const cumulativeMeters =
+    [0];
 
   let totalDistanceMeters =
     0;
 
   for (
-    let i = 1;
-    i < points.length;
-    i += 1
+    let index = 1;
+    index < points.length;
+    index += 1
   ) {
     totalDistanceMeters +=
       haversineDistanceMeters(
-        points[i - 1],
-        points[i]
+        points[index - 1],
+        points[index]
       );
 
     cumulativeMeters.push(
@@ -325,21 +989,29 @@ function buildRouteMetrics(
   };
 }
 
+/*
+|--------------------------------------------------------------------------
+| CLOSEST POINT ON SEGMENT
+|--------------------------------------------------------------------------
+*/
+
 function getClosestPointOnSegment(
   point,
   start,
   end
 ) {
-  const averageLatitudeRadians =
-    ((start.lat +
+  const averageLatitude =
+    (
+      start.lat +
       end.lat +
-      point.lat) /
-      3) *
+      point.lat
+    ) /
+    3 *
     (Math.PI / 180);
 
   const longitudeScale =
     Math.cos(
-      averageLatitudeRadians
+      averageLatitude
     ) || 1;
 
   const ax =
@@ -369,53 +1041,56 @@ function getClosestPointOnSegment(
   const dy =
     by - ay;
 
-  const segmentLengthSquared =
+  const lengthSquared =
     dx * dx + dy * dy;
 
   let fraction = 0;
 
   if (
-    segmentLengthSquared > 0
+    lengthSquared > 0
   ) {
     fraction =
-      ((px - ax) * dx +
-        (py - ay) * dy) /
-      segmentLengthSquared;
+      (
+        (px - ax) * dx +
+        (py - ay) * dy
+      ) /
+      lengthSquared;
 
-    fraction = Math.max(
-      0,
-      Math.min(
-        1,
-        fraction
-      )
-    );
+    fraction =
+      Math.max(
+        0,
+        Math.min(
+          1,
+          fraction
+        )
+      );
   }
 
-  const projected = {
-    lat:
-      ay +
-      (by - ay) *
-        fraction,
-
-    lng:
-      (ax +
-        (bx - ax) *
-          fraction) /
-      longitudeScale,
-  };
-
   return {
-    point: projected,
+    point: {
+      lat:
+        ay +
+        (by - ay) *
+          fraction,
 
-    distanceMeters:
-      haversineDistanceMeters(
-        point,
-        projected
-      ),
+      lng:
+        (
+          ax +
+          (bx - ax) *
+            fraction
+        ) /
+        longitudeScale,
+    },
 
     fraction,
   };
 }
+
+/*
+|--------------------------------------------------------------------------
+| CLOSEST ROUTE POSITION
+|--------------------------------------------------------------------------
+*/
 
 function getClosestRoutePosition(
   point,
@@ -431,20 +1106,21 @@ function getClosestRoutePosition(
   let best = null;
 
   for (
-    let i = 0;
-    i <
+    let index = 0;
+    index <
     routeMetrics.points
-      .length - 1;
-    i += 1
+      .length -
+      1;
+    index += 1
   ) {
     const start =
       routeMetrics.points[
-        i
+        index
       ];
 
     const end =
       routeMetrics.points[
-        i + 1
+        index + 1
       ];
 
     const projection =
@@ -454,30 +1130,38 @@ function getClosestRoutePosition(
         end
       );
 
+    const distance =
+      haversineDistanceMeters(
+        point,
+        projection.point
+      );
+
     const segmentDistance =
       routeMetrics
         .cumulativeMeters[
-          i + 1
+          index + 1
         ] -
       routeMetrics
-        .cumulativeMeters[i];
+        .cumulativeMeters[index];
 
     const progressMeters =
       routeMetrics
-        .cumulativeMeters[i] +
+        .cumulativeMeters[
+          index
+        ] +
       segmentDistance *
         projection.fraction;
 
     if (
       !best ||
-      projection.distanceMeters <
+      distance <
         best.distanceFromRouteMeters
     ) {
       best = {
         progressMeters,
 
         distanceFromRouteMeters:
-          projection.distanceMeters,
+          distance,
 
         point:
           projection.point,
@@ -488,320 +1172,222 @@ function getClosestRoutePosition(
   return best;
 }
 
-function getPointAtRouteDistance(
-  distanceMeters,
-  routeMetrics
+/*
+|--------------------------------------------------------------------------
+| OSRM
+|--------------------------------------------------------------------------
+*/
+
+async function getOsrmRoutes(
+  origin,
+  destination
 ) {
-  if (!routeMetrics) {
-    return null;
-  }
+  const coordinates =
+    `${origin.lng},${origin.lat};${destination.lng},${destination.lat}`;
+
+  const url =
+    `${OSRM_URL}/route/v1/driving/${coordinates}` +
+    "?alternatives=2" +
+    "&overview=full" +
+    "&geometries=geojson";
+
+  const response =
+    await fetch(url);
 
   if (
-    distanceMeters <= 0
+    !response.ok
   ) {
-    return routeMetrics
-      .points[0];
+    throw new Error(
+      `Routing server returned ${response.status}.`
+    );
   }
 
+  const data =
+    await response.json();
+
   if (
-    distanceMeters >=
-    routeMetrics.totalDistanceMeters
+    data?.code !== "Ok"
   ) {
-    return routeMetrics
-      .points[
-        routeMetrics.points
-          .length - 1
-      ];
+    throw new Error(
+      data?.message ||
+        "No route found."
+    );
   }
+
+  const routes =
+    Array.isArray(
+      data.routes
+    )
+      ? data.routes
+      : [];
+
+  return routes
+    .slice(0, 3)
+    .map(
+      (
+        item,
+        index
+      ) => {
+        const coordinates =
+          item?.geometry
+            ?.coordinates;
+
+        const path =
+          Array.isArray(
+            coordinates
+          )
+            ? coordinates
+                .map(
+                  (point) => {
+                    if (
+                      !Array.isArray(
+                        point
+                      ) ||
+                      point.length <
+                        2
+                    ) {
+                      return null;
+                    }
+
+                    const lng =
+                      Number(
+                        point[0]
+                      );
+
+                    const lat =
+                      Number(
+                        point[1]
+                      );
+
+                    if (
+                      !isValidCoordinate(
+                        lat,
+                        lng
+                      )
+                    ) {
+                      return null;
+                    }
+
+                    return {
+                      lat,
+                      lng,
+                    };
+                  }
+                )
+                .filter(Boolean)
+            : [];
+
+        return {
+          index,
+
+          path,
+
+          distanceMeters:
+            Number(
+              item?.distance
+            ) || 0,
+
+          durationMillis:
+            (
+              Number(
+                item?.duration
+              ) || 0
+            ) * 1000,
+
+          summary:
+            item?.summary ||
+            `Route ${
+              index + 1
+            }`,
+        };
+      }
+    )
+    .filter(
+      (item) =>
+        item.path.length >
+        1
+    );
+}
+
+/*
+|--------------------------------------------------------------------------
+| FALLBACK ROUTE
+|--------------------------------------------------------------------------
+*/
+
+function createFallbackRoute(
+  origin,
+  destination
+) {
+  const points = [];
+
+  const count = 70;
 
   for (
-    let i = 1;
-    i <
-    routeMetrics
-      .cumulativeMeters
-      .length;
-    i += 1
+    let index = 0;
+    index <= count;
+    index += 1
   ) {
-    if (
-      routeMetrics
-        .cumulativeMeters[i] >=
-      distanceMeters
-    ) {
-      const previousDistance =
-        routeMetrics
-          .cumulativeMeters[
-            i - 1
-          ];
+    const progress =
+      index / count;
 
-      const segmentDistance =
-        routeMetrics
-          .cumulativeMeters[i] -
-        previousDistance;
+    points.push({
+      lat:
+        origin.lat +
+        (
+          destination.lat -
+          origin.lat
+        ) *
+          progress,
 
-      const fraction =
-        segmentDistance > 0
-          ? (distanceMeters -
-              previousDistance) /
-            segmentDistance
-          : 0;
-
-      const start =
-        routeMetrics.points[
-          i - 1
-        ];
-
-      const end =
-        routeMetrics.points[
-          i
-        ];
-
-      return {
-        lat:
-          start.lat +
-          (end.lat -
-            start.lat) *
-            fraction,
-
-        lng:
-          start.lng +
-          (end.lng -
-            start.lng) *
-            fraction,
-      };
-    }
+      lng:
+        origin.lng +
+        (
+          destination.lng -
+          origin.lng
+        ) *
+          progress,
+    });
   }
 
-  return routeMetrics
-    .points[
-      routeMetrics.points.length -
-        1
-    ];
-}
+  const distance =
+    haversineDistanceMeters(
+      origin,
+      destination
+    );
 
-/*
-|--------------------------------------------------------------------------
-| Recommendation metadata
-|--------------------------------------------------------------------------
-*/
+  const duration =
+    (
+      distance / 1000 / 30
+    ) *
+    60 *
+    60000;
 
-function getCategoryDefinition(
-  key
-) {
-  return (
-    RECOMMENDATION_CATEGORIES.find(
-      (category) =>
-        category.key === key
-    ) ||
-    RECOMMENDATION_CATEGORIES[0]
-  );
-}
+  return [
+    {
+      index: 0,
 
-function getRecommendationDescription(
-  categoryKey
-) {
-  switch (categoryKey) {
-    case "hotel":
-      return "A stay option located close to your route.";
+      path: points,
 
-    case "cafe":
-      return "A convenient stop for coffee, snacks and a short break.";
+      distanceMeters:
+        distance,
 
-    case "park":
-      return "A nearby green space or garden that can make a pleasant travel stop.";
+      durationMillis:
+        duration,
 
-    case "camping":
-      return "An outdoor option for travellers interested in nature and camping.";
-
-    case "food":
-      return "A nearby food stop that can be useful during the journey.";
-
-    case "attraction":
-      return "An interesting place located close to your current route.";
-
-    default:
-      return "A recommended place located close to your current route.";
-  }
-}
-
-/*
-|--------------------------------------------------------------------------
-| Normalize recommendation returned by backend
-|--------------------------------------------------------------------------
-|
-| Backend returns:
-|
-| {
-|   id,
-|   name,
-|   address,
-|   latitude,
-|   longitude,
-|   categoryKeys,
-|   categoryLabel,
-|   categoryIcon,
-|   ...
-| }
-|
-| The frontend converts it into the shape used by the UI.
-|
-*/
-
-function normalizeRecommendation(
-  item
-) {
-  if (!item) {
-    return null;
-  }
-
-  const latitude =
-    Number(item.latitude);
-
-  const longitude =
-    Number(item.longitude);
-
-  if (
-    !isValidCoordinate(
-      latitude,
-      longitude
-    )
-  ) {
-    return null;
-  }
-
-  const categoryKeys =
-    Array.isArray(
-      item.categoryKeys
-    ) &&
-    item.categoryKeys.length > 0
-      ? item.categoryKeys
-      : [
-          "attraction",
-        ];
-
-  const stars =
-    Number(item.stars);
-
-  const hasStars =
-    Number.isFinite(stars) &&
-    stars > 0;
-
-  return {
-    ...item,
-
-    id:
-      item.id ||
-      `${latitude}-${longitude}`,
-
-    place_id:
-      item.id ||
-      `${latitude}-${longitude}`,
-
-    name:
-      item.name ||
-      "Recommended place",
-
-    address:
-      item.address ||
-      "",
-
-    vicinity:
-      item.address ||
-      "",
-
-    latitude,
-
-    longitude,
-
-    coordinates: {
-      lat: latitude,
-      lng: longitude,
+      summary:
+        "Demo route",
     },
-
-    categoryKeys,
-
-    description:
-      item.description ||
-      getRecommendationDescription(
-        categoryKeys[0]
-      ),
-
-    rating:
-      hasStars
-        ? stars
-        : null,
-
-    /*
-     * OpenStreetMap does not provide Google's review count.
-     */
-
-    user_ratings_total: 0,
-
-    /*
-     * We do NOT claim these are Google-popular places.
-     *
-     * This badge simply tells the tourist that
-     * the location has been selected for the route.
-     */
-
-    popularEnough: false,
-
-    source:
-      item.source ||
-      "openstreetmap",
-
-    openingHours:
-      item.openingHours ||
-      null,
-
-    website:
-      item.website ||
-      null,
-
-    distanceAheadMeters:
-      Number(
-        item.distanceAheadMeters
-      ) || 0,
-
-    liveDistanceAheadMeters:
-      Number(
-        item.distanceAheadMeters
-      ) || 0,
-
-    progressMeters:
-      Number(
-        item.progressMeters
-      ) || 0,
-
-    distanceFromRouteMeters:
-      Number(
-        item.distanceFromRouteMeters
-      ) || 0,
-
-    categoryLabel:
-      item.categoryLabel ||
-      getCategoryDefinition(
-        categoryKeys[0]
-      ).label,
-
-    categoryIcon:
-      item.categoryIcon ||
-      getCategoryDefinition(
-        categoryKeys[0]
-      ).icon,
-  };
+  ];
 }
 
 /*
 |--------------------------------------------------------------------------
-| Main component
+| COMPONENT
 |--------------------------------------------------------------------------
 */
 
-export default function Placemap({
-  apiUrl =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:5000/api",
-}) {
+export default function Placemap() {
   const [
     searchParams,
   ] = useSearchParams();
@@ -816,7 +1402,7 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Google Maps
+  | GOOGLE MAP
   |--------------------------------------------------------------------------
   */
 
@@ -838,7 +1424,7 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Place
+  | DESTINATION
   |--------------------------------------------------------------------------
   */
 
@@ -855,22 +1441,16 @@ export default function Placemap({
     setPlaceError,
   ] = useState("");
 
-  const [
-    showDestinationInfo,
-    setShowDestinationInfo,
-  ] = useState(true);
-
   /*
   |--------------------------------------------------------------------------
-  | Load place from existing backend
+  | LOAD DESTINATION
   |--------------------------------------------------------------------------
   */
 
   useEffect(() => {
-    let cancelled =
-      false;
+    let cancelled = false;
 
-    async function loadPlace() {
+    async function loadDestination() {
       if (!placeId) {
         setPlaceError(
           "Place ID is missing."
@@ -883,13 +1463,51 @@ export default function Placemap({
         return;
       }
 
+      const localPlaces =
+        Array.isArray(
+          placesData?.places
+        )
+          ? placesData.places
+          : [];
+
+      const localPlace =
+        localPlaces.find(
+          (item) =>
+            String(
+              item?.id
+            ) ===
+            String(
+              placeId
+            )
+        );
+
+      if (
+        localPlace
+      ) {
+        if (!cancelled) {
+          setPlace(
+            localPlace
+          );
+
+          setPlaceLoading(
+            false
+          );
+        }
+
+        return;
+      }
+
       try {
-        setPlaceLoading(true);
-        setPlaceError("");
+        const apiUrl =
+          import.meta.env
+            .VITE_API_URL ||
+          "http://localhost:5000/api";
 
         const response =
           await fetch(
-            `${apiUrl}/places/${placeId}`
+            `${apiUrl}/places/${encodeURIComponent(
+              placeId
+            )}`
           );
 
         const data =
@@ -899,16 +1517,20 @@ export default function Placemap({
               () => ({})
             );
 
-        if (!response.ok) {
+        if (
+          !response.ok
+        ) {
           throw new Error(
             data?.error ||
-              "Failed to load place."
+              "Failed to load destination."
           );
         }
 
-        if (!data?.place) {
+        if (
+          !data?.place
+        ) {
           throw new Error(
-            "Place data is missing."
+            "Destination data is missing."
           );
         }
 
@@ -919,14 +1541,14 @@ export default function Placemap({
         }
       } catch (error) {
         console.error(
-          "❌ PLACE LOAD ERROR:",
+          "DESTINATION ERROR:",
           error
         );
 
         if (!cancelled) {
           setPlaceError(
             error?.message ||
-              "Failed to load place."
+              "Unable to load destination."
           );
         }
       } finally {
@@ -938,210 +1560,220 @@ export default function Placemap({
       }
     }
 
-    loadPlace();
+    loadDestination();
 
     return () => {
       cancelled = true;
     };
-  }, [
-    placeId,
-    apiUrl,
-  ]);
+  }, [placeId]);
 
   /*
   |--------------------------------------------------------------------------
-  | Destination
+  | DESTINATION COORDINATES
   |--------------------------------------------------------------------------
   */
 
   const destination =
-    useMemo(() => {
-      if (!place) {
-        return null;
-      }
-
-      const googlePlaceId =
-        String(
-          place.googlePlaceId ||
-            ""
-        ).trim();
-
-      if (!googlePlaceId) {
-        console.error(
-          "❌ PLACE DOES NOT HAVE GOOGLE PLACE ID:",
+    useMemo(
+      () =>
+        getPlaceCoordinate(
           place
-        );
-
-        return null;
-      }
-
-      let latitude =
-        Number(
-          place.latitude
-        );
-
-      let longitude =
-        Number(
-          place.longitude
-        );
-
-      /*
-       * GeoJSON fallback:
-       * [longitude, latitude]
-       */
-
-      if (
-        !isValidCoordinate(
-          latitude,
-          longitude
-        )
-      ) {
-        const coordinates =
-          place.locationPoint
-            ?.coordinates;
-
-        if (
-          Array.isArray(
-            coordinates
-          ) &&
-          coordinates.length >=
-            2
-        ) {
-          longitude =
-            Number(
-              coordinates[0]
-            );
-
-          latitude =
-            Number(
-              coordinates[1]
-            );
-        }
-      }
-
-      /*
-       * lat/lng fallback
-       */
-
-      if (
-        !isValidCoordinate(
-          latitude,
-          longitude
-        )
-      ) {
-        latitude =
-          Number(place.lat);
-
-        longitude =
-          Number(place.lng);
-      }
-
-      if (
-        !isValidCoordinate(
-          latitude,
-          longitude
-        )
-      ) {
-        console.error(
-          "❌ INVALID DESTINATION COORDINATES:",
-          {
-            place,
-            latitude,
-            longitude,
-          }
-        );
-
-        return null;
-      }
-
-      return {
-        lat: latitude,
-        lng: longitude,
-        googlePlaceId,
-      };
-    }, [place]);
+        ),
+      [place]
+    );
 
   /*
   |--------------------------------------------------------------------------
-  | EXISTING NAVIGATION SYSTEM
+  | NAVIGATION STATE
   |--------------------------------------------------------------------------
-  |
-  | DO NOT CHANGE.
-  |
   */
 
-  const {
+  const [
     isNavigating,
-    position,
-    route,
-    routes,
-    selectedRoute,
-    loadingRoute,
-    error,
-    offRoute,
-    speed,
-    distanceToDestination,
-    eta,
-    startNavigation,
-    stopNavigation,
-    recalculateRoute,
-    selectRoute,
-  } = useNavigation({
-    destination,
-    mode: "driving",
-    googleLoaded: isLoaded,
-  });
+    setIsNavigating,
+  ] = useState(false);
 
-  const safeRoutes =
-    Array.isArray(routes)
-      ? routes
-      : [];
+  const [
+    position,
+    setPosition,
+  ] = useState(null);
+
+  const [
+    routes,
+    setRoutes,
+  ] = useState([]);
+
+  const [
+    route,
+    setRoute,
+  ] = useState(null);
+
+  const [
+    selectedRoute,
+    setSelectedRoute,
+  ] = useState(0);
+
+  const [
+    loadingRoute,
+    setLoadingRoute,
+  ] = useState(false);
+
+  const [
+    navigationError,
+    setNavigationError,
+  ] = useState("");
+
+  const [
+    offRoute,
+    setOffRoute,
+  ] = useState(false);
+
+  const [
+    speed,
+    setSpeed,
+  ] = useState(null);
 
   /*
   |--------------------------------------------------------------------------
-  | Map center
+  | CATEGORY FILTER
   |--------------------------------------------------------------------------
   */
 
-  const mapCenter =
-    position
-      ? {
-          lat:
-            position.lat,
-
-          lng:
-            position.lng,
-        }
-      : destination
-        ? {
-            lat:
-              destination.lat,
-
-            lng:
-              destination.lng,
-          }
-        : DEFAULT_CENTER;
+  const [
+    activeCategory,
+    setActiveCategory,
+  ] = useState("all");
 
   /*
   |--------------------------------------------------------------------------
-  | Map reference
+  | DESCRIPTION EXPANSION
+  |--------------------------------------------------------------------------
+  */
+
+  const [
+    expandedPlaceId,
+    setExpandedPlaceId,
+  ] = useState(null);
+
+  /*
+  |--------------------------------------------------------------------------
+  | SELECTED PLACE
+  |--------------------------------------------------------------------------
+  */
+
+  const [
+    selectedPlace,
+    setSelectedPlace,
+  ] = useState(null);
+
+  /*
+  |--------------------------------------------------------------------------
+  | MAP
   |--------------------------------------------------------------------------
   */
 
   const [map, setMap] =
     useState(null);
 
-  const positionRef =
-    useRef(position);
+  const watchIdRef =
+    useRef(null);
 
-  positionRef.current =
-    position;
+  const positionRef =
+    useRef(null);
+
+  const recalculatingRef =
+    useRef(false);
+
+  useEffect(() => {
+    positionRef.current =
+      position;
+  }, [position]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | STATIC PLACES
+  |--------------------------------------------------------------------------
+  */
+
+  const staticPlaces =
+    useMemo(
+      () =>
+        STATIC_JOURNEY_PLACES,
+      []
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | FILTERED PLACES
+  |--------------------------------------------------------------------------
+  */
+
+  const filteredPlaces =
+    useMemo(() => {
+      if (
+        activeCategory ===
+        "all"
+      ) {
+        return staticPlaces;
+      }
+
+      return staticPlaces.filter(
+        (item) =>
+          item.category ===
+          activeCategory
+      );
+    }, [
+      activeCategory,
+      staticPlaces,
+    ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | CATEGORY COUNTS
+  |--------------------------------------------------------------------------
+  */
+
+  const categoryCounts =
+    useMemo(() => {
+      const counts = {};
+
+      Object.keys(
+        PLACE_CATEGORIES
+      ).forEach(
+        (key) => {
+          counts[key] = 0;
+        }
+      );
+
+      staticPlaces.forEach(
+        (item) => {
+          if (
+            counts[
+              item.category
+            ] !== undefined
+          ) {
+            counts[
+              item.category
+            ] += 1;
+          }
+        }
+      );
+
+      counts.all =
+        staticPlaces.length;
+
+      return counts;
+    }, [staticPlaces]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | MAP CALLBACKS
+  |--------------------------------------------------------------------------
+  */
 
   const onMapLoad =
     useCallback(
-      (
-        mapInstance
-      ) => {
+      (mapInstance) => {
         setMap(
           mapInstance
         );
@@ -1156,71 +1788,429 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Existing route fitting
+  | LOCATION
+  |--------------------------------------------------------------------------
+  */
+
+  const getCurrentLocation =
+    useCallback(() => {
+      return new Promise(
+        (resolve) => {
+          if (
+            !navigator.geolocation
+          ) {
+            setPosition(
+              DEFAULT_CENTER
+            );
+
+            resolve(
+              DEFAULT_CENTER
+            );
+
+            return;
+          }
+
+          navigator.geolocation.getCurrentPosition(
+            (geoPosition) => {
+              const current = {
+                lat:
+                  Number(
+                    geoPosition
+                      .coords
+                      .latitude
+                  ),
+
+                lng:
+                  Number(
+                    geoPosition
+                      .coords
+                      .longitude
+                  ),
+              };
+
+              setPosition(
+                current
+              );
+
+              const gpsSpeed =
+                Number(
+                  geoPosition
+                    .coords
+                    .speed
+                );
+
+              if (
+                Number.isFinite(
+                  gpsSpeed
+                ) &&
+                gpsSpeed >= 0
+              ) {
+                setSpeed(
+                  gpsSpeed * 3.6
+                );
+              }
+
+              resolve(
+                current
+              );
+            },
+
+            () => {
+              setPosition(
+                DEFAULT_CENTER
+              );
+
+              resolve(
+                DEFAULT_CENTER
+              );
+            },
+
+            {
+              enableHighAccuracy:
+                true,
+
+              maximumAge:
+                5000,
+
+              timeout:
+                10000,
+            }
+          );
+        }
+      );
+    }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | LOCATION WATCH
+  |--------------------------------------------------------------------------
+  */
+
+  const startLocationWatch =
+    useCallback(() => {
+      if (
+        !navigator.geolocation
+      ) {
+        return;
+      }
+
+      if (
+        watchIdRef.current !==
+        null
+      ) {
+        navigator.geolocation.clearWatch(
+          watchIdRef.current
+        );
+      }
+
+      watchIdRef.current =
+        navigator.geolocation.watchPosition(
+          (geoPosition) => {
+            const current = {
+              lat:
+                Number(
+                  geoPosition
+                    .coords
+                    .latitude
+                ),
+
+              lng:
+                Number(
+                  geoPosition
+                    .coords
+                    .longitude
+                ),
+            };
+
+            setPosition(
+              current
+            );
+
+            const gpsSpeed =
+              Number(
+                geoPosition
+                  .coords
+                  .speed
+              );
+
+            if (
+              Number.isFinite(
+                gpsSpeed
+              ) &&
+              gpsSpeed >= 0
+            ) {
+              setSpeed(
+                gpsSpeed * 3.6
+              );
+            }
+          },
+
+          () => {
+            // Keep last location.
+          },
+
+          {
+            enableHighAccuracy:
+              true,
+
+            maximumAge:
+              3000,
+
+            timeout:
+              10000,
+          }
+        );
+    }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | STOP LOCATION WATCH
+  |--------------------------------------------------------------------------
+  */
+
+  const stopLocationWatch =
+    useCallback(() => {
+      if (
+        watchIdRef.current !==
+          null &&
+        navigator.geolocation
+      ) {
+        navigator.geolocation.clearWatch(
+          watchIdRef.current
+        );
+
+        watchIdRef.current =
+          null;
+      }
+    }, []);
+
+  /*
+  |--------------------------------------------------------------------------
+  | CALCULATE ROUTE
+  |--------------------------------------------------------------------------
+  */
+
+  const calculateRoute =
+    useCallback(
+      async (
+        origin,
+        routeIndex = 0
+      ) => {
+        if (
+          !origin ||
+          !destination
+        ) {
+          throw new Error(
+            "Current location or destination coordinates are missing."
+          );
+        }
+
+        setLoadingRoute(
+          true
+        );
+
+        setNavigationError("");
+
+        try {
+          let availableRoutes =
+            [];
+
+          try {
+            availableRoutes =
+              await getOsrmRoutes(
+                origin,
+                destination
+              );
+          } catch (
+            error
+          ) {
+            console.warn(
+              "OSRM unavailable. Using demo route.",
+              error
+            );
+
+            availableRoutes =
+              createFallbackRoute(
+                origin,
+                destination
+              );
+          }
+
+          if (
+            availableRoutes.length ===
+            0
+          ) {
+            availableRoutes =
+              createFallbackRoute(
+                origin,
+                destination
+              );
+          }
+
+          const safeIndex =
+            Math.max(
+              0,
+              Math.min(
+                routeIndex,
+                availableRoutes.length -
+                  1
+              )
+            );
+
+          setRoutes(
+            availableRoutes
+          );
+
+          setSelectedRoute(
+            safeIndex
+          );
+
+          setRoute(
+            availableRoutes[
+              safeIndex
+            ]
+          );
+
+          return availableRoutes;
+        } catch (error) {
+          console.error(
+            "ROUTE ERROR:",
+            error
+          );
+
+          setNavigationError(
+            error?.message ||
+              "Unable to calculate route."
+          );
+
+          throw error;
+        } finally {
+          setLoadingRoute(
+            false
+          );
+        }
+      },
+      [destination]
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | START NAVIGATION
+  |--------------------------------------------------------------------------
+  */
+
+  const startNavigation =
+    useCallback(
+      async () => {
+        if (
+          !destination
+        ) {
+          setNavigationError(
+            "This destination does not have valid coordinates."
+          );
+
+          return;
+        }
+
+        try {
+          setNavigationError("");
+
+          const current =
+            await getCurrentLocation();
+
+          await calculateRoute(
+            current,
+            0
+          );
+
+          setIsNavigating(
+            true
+          );
+
+          setExpandedPlaceId(
+            null
+          );
+
+          startLocationWatch();
+        } catch (error) {
+          console.error(
+            "START NAVIGATION ERROR:",
+            error
+          );
+
+          setNavigationError(
+            error?.message ||
+              "Unable to start navigation."
+          );
+        }
+      },
+      [
+        destination,
+        getCurrentLocation,
+        calculateRoute,
+        startLocationWatch,
+      ]
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | STOP NAVIGATION
+  |--------------------------------------------------------------------------
+  */
+
+  const stopNavigation =
+    useCallback(() => {
+      stopLocationWatch();
+
+      setIsNavigating(
+        false
+      );
+
+      setRoutes([]);
+
+      setRoute(null);
+
+      setSelectedRoute(
+        0
+      );
+
+      setSpeed(null);
+
+      setOffRoute(false);
+
+      setNavigationError("");
+
+      setSelectedPlace(
+        null
+      );
+
+      setExpandedPlaceId(
+        null
+      );
+
+      recalculatingRef.current =
+        false;
+    }, [
+      stopLocationWatch,
+    ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | CLEANUP
   |--------------------------------------------------------------------------
   */
 
   useEffect(() => {
-    if (
-      !map ||
-      !route?.path ||
-      route.path.length === 0
-    ) {
-      return;
-    }
-
-    if (
-      !window.google?.maps
-    ) {
-      return;
-    }
-
-    const bounds =
-      new window.google.maps.LatLngBounds();
-
-    route.path.forEach(
-      (point) => {
-        bounds.extend({
-          lat: point.lat,
-          lng: point.lng,
-        });
-      }
-    );
-
-    if (position) {
-      bounds.extend({
-        lat:
-          position.lat,
-
-        lng:
-          position.lng,
-      });
-    }
-
-    if (destination) {
-      bounds.extend({
-        lat:
-          destination.lat,
-
-        lng:
-          destination.lng,
-      });
-    }
-
-    map.fitBounds(
-      bounds,
-      80
-    );
+    return () => {
+      stopLocationWatch();
+    };
   }, [
-    map,
-    route,
-    position,
-    destination,
+    stopLocationWatch,
   ]);
 
   /*
   |--------------------------------------------------------------------------
-  | Dynamic route analysis
+  | ROUTE METRICS
   |--------------------------------------------------------------------------
   */
 
@@ -1233,541 +2223,483 @@ export default function Placemap({
       [route?.path]
     );
 
-  const currentRouteProgressMeters =
+  /*
+  |--------------------------------------------------------------------------
+  | CURRENT ROUTE POSITION
+  |--------------------------------------------------------------------------
+  */
+
+  const currentRoutePosition =
     useMemo(() => {
-      if (!routeMetrics) {
-        return 0;
+      if (
+        !position ||
+        !routeMetrics
+      ) {
+        return null;
       }
 
-      if (!position) {
-        return 0;
-      }
-
-      return (
-        getClosestRoutePosition(
-          position,
-          routeMetrics
-        )?.progressMeters ||
-        0
+      return getClosestRoutePosition(
+        position,
+        routeMetrics
       );
     }, [
       position,
       routeMetrics,
     ]);
 
+  const currentProgressMeters =
+    currentRoutePosition
+      ?.progressMeters || 0;
+
   /*
   |--------------------------------------------------------------------------
-  | Dynamic recommendation state
+  | PROGRESS
   |--------------------------------------------------------------------------
   */
 
-  const [
-    nearbyPlaces,
-    setNearbyPlaces,
-  ] = useState([]);
+  const currentProgressPercent =
+    useMemo(() => {
+      if (
+        !routeMetrics ||
+        routeMetrics
+          .totalDistanceMeters <=
+          0
+      ) {
+        return 0;
+      }
 
-  const [
-    nearbyLoading,
-    setNearbyLoading,
-  ] = useState(false);
-
-  const [
-    nearbyError,
-    setNearbyError,
-  ] = useState("");
-
-  const [
-    activeCategory,
-    setActiveCategory,
-  ] = useState("all");
-
-  const [
-    selectedNearbyPlace,
-    setSelectedNearbyPlace,
-  ] = useState(null);
-
-  const searchVersionRef =
-    useRef(0);
+      return Math.min(
+        100,
+        Math.max(
+          0,
+          (
+            currentProgressMeters /
+            routeMetrics
+              .totalDistanceMeters
+          ) *
+            100
+        )
+      );
+    }, [
+      routeMetrics,
+      currentProgressMeters,
+    ]);
 
   /*
   |--------------------------------------------------------------------------
-  | Load route recommendations from YOUR BACKEND
-  |--------------------------------------------------------------------------
-  |
-  | IMPORTANT:
-  |
-  | There is NO:
-  | - PlacesService
-  | - nearbySearch
-  | - Google Places request
-  |
-  | here anymore.
-  |
-  | The backend will search OpenStreetMap / Overpass.
+  | REMAINING DISTANCE
   |--------------------------------------------------------------------------
   */
 
-  const searchRouteRecommendations =
-    useCallback(
-      async () => {
-        if (
-          !apiUrl ||
-          !routeMetrics
-        ) {
-          return;
-        }
-
-        const searchVersion =
-          searchVersionRef.current +
-          1;
-
-        searchVersionRef.current =
-          searchVersion;
-
-        setNearbyLoading(
-          true
+  const distanceToDestination =
+    useMemo(() => {
+      if (
+        routeMetrics
+      ) {
+        return Math.max(
+          0,
+          routeMetrics
+            .totalDistanceMeters -
+            currentProgressMeters
         );
+      }
 
-        setNearbyError("");
-
-        setSelectedNearbyPlace(
-          null
+      if (
+        position &&
+        destination
+      ) {
+        return haversineDistanceMeters(
+          position,
+          destination
         );
+      }
 
-        try {
-          const latestPosition =
-            positionRef.current;
-
-          const currentProgress =
-            latestPosition
-              ? getClosestRoutePosition(
-                  latestPosition,
-                  routeMetrics
-                )?.progressMeters ||
-                0
-              : 0;
-
-          /*
-           * Send the actual route to the backend.
-           */
-
-          const response =
-            await fetch(
-              `${apiUrl}/places/recommendations`,
-              {
-                method:
-                  "POST",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-                },
-
-                body:
-                  JSON.stringify({
-                    route:
-                      routeMetrics.points,
-
-                    currentPosition:
-                      latestPosition
-                        ? {
-                            lat:
-                              Number(
-                                latestPosition.lat
-                              ),
-
-                            lng:
-                              Number(
-                                latestPosition.lng
-                              ),
-                          }
-                        : null,
-                  }),
-              }
-            );
-
-          const data =
-            await response
-              .json()
-              .catch(
-                () => ({})
-              );
-
-          if (!response.ok) {
-            throw new Error(
-              data?.message ||
-                data?.error ||
-                "Failed to load route recommendations."
-            );
-          }
-
-          if (
-            searchVersionRef.current !==
-            searchVersion
-          ) {
-            return;
-          }
-
-          const backendPlaces =
-            Array.isArray(
-              data?.recommendations
-            )
-              ? data.recommendations
-              : [];
-
-          /*
-           * Convert backend results into
-           * the format used by the UI.
-           */
-
-          const normalizedPlaces =
-            backendPlaces
-              .map(
-                (
-                  item
-                ) =>
-                  normalizeRecommendation(
-                    item
-                  )
-              )
-              .filter(
-                Boolean
-              )
-              .map(
-                (item) => {
-                  const distanceAhead =
-                    item.progressMeters -
-                    currentProgress;
-
-                  return {
-                    ...item,
-
-                    distanceAheadMeters:
-                      distanceAhead,
-
-                    liveDistanceAheadMeters:
-                      distanceAhead,
-                  };
-                }
-              )
-              .filter(
-                (item) =>
-                  item.progressMeters <=
-                    routeMetrics.totalDistanceMeters +
-                      250 &&
-                  item.distanceAheadMeters >=
-                    MIN_AHEAD_DISTANCE_METERS
-              )
-              .sort(
-                (
-                  first,
-                  second
-                ) =>
-                  first.distanceAheadMeters -
-                  second.distanceAheadMeters
-              )
-              .slice(
-                0,
-                MAX_RECOMMENDATIONS
-              );
-
-          setNearbyPlaces(
-            normalizedPlaces
-          );
-        } catch (error) {
-          console.error(
-            "❌ ROUTE RECOMMENDATION ERROR:",
-            error
-          );
-
-          if (
-            searchVersionRef.current ===
-            searchVersion
-          ) {
-            setNearbyPlaces(
-              []
-            );
-
-            setNearbyError(
-              error?.message ||
-                "Could not analyze places along this route."
-            );
-          }
-        } finally {
-          if (
-            searchVersionRef.current ===
-            searchVersion
-          ) {
-            setNearbyLoading(
-              false
-            );
-          }
-        }
-      },
-      [
-        apiUrl,
-        routeMetrics,
-      ]
-    );
+      return null;
+    }, [
+      routeMetrics,
+      currentProgressMeters,
+      position,
+      destination,
+    ]);
 
   /*
   |--------------------------------------------------------------------------
-  | Run recommendation search when route changes
+  | ETA
   |--------------------------------------------------------------------------
-  |
-  | GPS position is intentionally NOT a dependency.
-  |
-  | This prevents a backend/API request on every GPS update.
+  */
+
+  const eta =
+    useMemo(() => {
+      if (
+        !route ||
+        route.distanceMeters <=
+          0 ||
+        route.durationMillis <=
+          0 ||
+        !Number.isFinite(
+          distanceToDestination
+        )
+      ) {
+        return null;
+      }
+
+      const ratio =
+        Math.min(
+          1,
+          Math.max(
+            0,
+            distanceToDestination /
+              route.distanceMeters
+          )
+        );
+
+      return Math.max(
+        1,
+        Math.round(
+          (
+            route.durationMillis /
+            60000
+          ) *
+            ratio
+        )
+      );
+    }, [
+      route,
+      distanceToDestination,
+    ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | OFF ROUTE
   |--------------------------------------------------------------------------
   */
 
   useEffect(() => {
     if (
-      !routeMetrics
+      !isNavigating ||
+      !routeMetrics ||
+      !position
     ) {
-      setNearbyPlaces(
-        []
-      );
-
-      setNearbyError(
-        ""
-      );
+      setOffRoute(false);
 
       return;
     }
 
-    searchRouteRecommendations();
+    const closest =
+      getClosestRoutePosition(
+        position,
+        routeMetrics
+      );
+
+    if (!closest) {
+      setOffRoute(false);
+
+      return;
+    }
+
+    setOffRoute(
+      closest.distanceFromRouteMeters >
+        150
+    );
   }, [
+    isNavigating,
     routeMetrics,
-    searchRouteRecommendations,
+    position,
   ]);
 
   /*
   |--------------------------------------------------------------------------
-  | Manual refresh
+  | AUTO RECALCULATE
   |--------------------------------------------------------------------------
   */
 
-  const refreshRecommendations =
-    useCallback(
-      () => {
-        searchRouteRecommendations();
-      },
-      [
-        searchRouteRecommendations,
-      ]
-    );
+  useEffect(() => {
+    if (
+      !isNavigating ||
+      !offRoute ||
+      !position ||
+      recalculatingRef.current
+    ) {
+      return;
+    }
 
-  /*
-  |--------------------------------------------------------------------------
-  | Re-sort existing recommendations as GPS progresses
-  |--------------------------------------------------------------------------
-  |
-  | No new API request occurs here.
-  |--------------------------------------------------------------------------
-  */
+    recalculatingRef.current =
+      true;
 
-  const visibleNearbyPlaces =
-    useMemo(() => {
-      return nearbyPlaces
-        .map(
-          (item) => ({
-            ...item,
-
-            liveDistanceAheadMeters:
-              item.progressMeters -
-              currentRouteProgressMeters,
-          })
-        )
-        .filter(
-          (item) =>
-            item.liveDistanceAheadMeters >=
-            MIN_AHEAD_DISTANCE_METERS
-        )
-        .filter((item) => {
-          if (
-            activeCategory ===
-            "all"
-          ) {
-            return true;
-          }
-
-          return (
-            Array.isArray(
-              item.categoryKeys
-            ) &&
-            item.categoryKeys.includes(
-              activeCategory
-            )
-          );
-        })
-        .sort(
-          (
-            first,
-            second
-          ) =>
-            first.liveDistanceAheadMeters -
-            second.liveDistanceAheadMeters
-        )
-        .slice(
-          0,
-          MAX_RECOMMENDATIONS
-        );
-    }, [
-      nearbyPlaces,
-      currentRouteProgressMeters,
-      activeCategory,
-    ]);
-
-  /*
-  |--------------------------------------------------------------------------
-  | Approximate stop time
-  |--------------------------------------------------------------------------
-  */
-
-  const getApproximateStopTime =
-    useCallback(
-      (
-        distanceMeters
-      ) => {
-        if (
-          !Number.isFinite(
-            distanceMeters
-          ) ||
-          distanceMeters <= 0
-        ) {
-          return "--";
-        }
-
-        const totalRemainingDistance =
-          routeMetrics
-            ? Math.max(
-                1,
-                routeMetrics.totalDistanceMeters -
-                  currentRouteProgressMeters
-              )
-            : 1;
-
-        if (
-          eta !== null &&
-          Number.isFinite(
-            Number(eta)
-          )
-        ) {
-          const ratio =
-            Math.min(
-              1,
-              Math.max(
-                0,
-                distanceMeters /
-                  totalRemainingDistance
-              )
+    const timeout =
+      window.setTimeout(
+        async () => {
+          try {
+            await calculateRoute(
+              position,
+              selectedRoute
             );
+          } catch {
+            // Existing error UI handles it.
+          } finally {
+            recalculatingRef.current =
+              false;
+          }
+        },
+        2000
+      );
 
-          return `≈ ${Math.max(
-            1,
-            Math.round(
-              Number(eta) *
-                ratio
-            )
-          )} min`;
+    return () =>
+      window.clearTimeout(
+        timeout
+      );
+  }, [
+    isNavigating,
+    offRoute,
+    position,
+    selectedRoute,
+    calculateRoute,
+  ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | SELECT ROUTE
+  |--------------------------------------------------------------------------
+  */
+
+  const selectRoute =
+    useCallback(
+      (index) => {
+        const nextRoute =
+          routes?.[index];
+
+        if (!nextRoute) {
+          return;
         }
 
-        const usableSpeed =
-          Number.isFinite(
-            speed
-          ) &&
-          speed > 5
-            ? speed
-            : 30;
+        setSelectedRoute(
+          index
+        );
 
-        const minutes =
-          (distanceMeters /
-            1000 /
-            usableSpeed) *
-          60;
+        setRoute(
+          nextRoute
+        );
 
-        return `≈ ${Math.max(
-          1,
-          Math.round(
-            minutes
-          )
-        )} min`;
+        setOffRoute(false);
+
+        if (
+          map &&
+          nextRoute.path
+            ?.length > 1 &&
+          window.google?.maps
+        ) {
+          const bounds =
+            new window.google.maps.LatLngBounds();
+
+          nextRoute.path.forEach(
+            (point) => {
+              bounds.extend({
+                lat:
+                  point.lat,
+
+                lng:
+                  point.lng,
+              });
+            }
+          );
+
+          map.fitBounds(
+            bounds,
+            80
+          );
+        }
+      },
+      [routes, map]
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | RECALCULATE
+  |--------------------------------------------------------------------------
+  */
+
+  const recalculateRoute =
+    useCallback(
+      async () => {
+        try {
+          const origin =
+            positionRef.current ||
+            (await getCurrentLocation());
+
+          await calculateRoute(
+            origin,
+            selectedRoute
+          );
+        } catch (error) {
+          console.error(
+            "RECALCULATE ERROR:",
+            error
+          );
+        }
       },
       [
-        eta,
-        speed,
-        routeMetrics,
-        currentRouteProgressMeters,
+        calculateRoute,
+        getCurrentLocation,
+        selectedRoute,
       ]
     );
 
   /*
   |--------------------------------------------------------------------------
-  | Selected recommendation category
+  | HIDDEN PLACE COORDINATES
   |--------------------------------------------------------------------------
   */
 
-  const selectedCategory =
-    selectedNearbyPlace
-      ? getCategoryDefinition(
-          selectedNearbyPlace
-            .categoryKeys?.find(
-              (key) =>
-                key !== "all"
-            ) ||
-            "attraction"
-        )
-      : null;
-
-  /*
-  |--------------------------------------------------------------------------
-  | Marker color
-  |--------------------------------------------------------------------------
-  */
-
-  const getMarkerColor =
+  const getStaticPlaceCoordinates =
     useCallback(
-      (categoryKey) => {
-        switch (
-          categoryKey
-        ) {
-          case "hotel":
-            return "#2563eb";
-
-          case "cafe":
-            return "#b45309";
-
-          case "park":
-            return "#16a34a";
-
-          case "camping":
-            return "#7c3aed";
-
-          case "food":
-            return "#dc2626";
-
-          case "attraction":
-            return "#0891b2";
-
-          default:
-            return "#475569";
-        }
+      (item) => {
+        return (
+          item?.coordinates ||
+          getPlaceCoordinate(
+            item
+          )
+        );
       },
       []
     );
 
   /*
   |--------------------------------------------------------------------------
-  | Loading
+  | VIEW PLACE
   |--------------------------------------------------------------------------
   */
 
-  if (placeLoading) {
+  const showPlaceOnMap =
+    useCallback(
+      (item) => {
+        const coordinates =
+          getStaticPlaceCoordinates(
+            item
+          );
+
+        if (
+          !coordinates
+        ) {
+          return;
+        }
+
+        setSelectedPlace({
+          ...item,
+          coordinates,
+        });
+
+        if (map) {
+          map.panTo(
+            coordinates
+          );
+
+          map.setZoom(15);
+        }
+      },
+      [
+        getStaticPlaceCoordinates,
+        map,
+      ]
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | DIRECTIONS
+  |--------------------------------------------------------------------------
+  */
+
+  const openDirections =
+    useCallback(
+      (item) => {
+        const coordinates =
+          getStaticPlaceCoordinates(
+            item
+          );
+
+        if (
+          !coordinates
+        ) {
+          return;
+        }
+
+        const url =
+          `https://www.google.com/maps/dir/?api=1&destination=${coordinates.lat},${coordinates.lng}`;
+
+        window.open(
+          url,
+          "_blank",
+          "noopener,noreferrer"
+        );
+      },
+      [
+        getStaticPlaceCoordinates,
+      ]
+    );
+
+  /*
+  |--------------------------------------------------------------------------
+  | MAP CENTER
+  |--------------------------------------------------------------------------
+  */
+
+  const mapCenter =
+    position ||
+    destination ||
+    DEFAULT_CENTER;
+
+  /*
+  |--------------------------------------------------------------------------
+  | FIT ROUTE
+  |--------------------------------------------------------------------------
+  */
+
+  useEffect(() => {
+    if (
+      !map ||
+      !route?.path ||
+      route.path.length < 2 ||
+      !window.google?.maps
+    ) {
+      return;
+    }
+
+    const bounds =
+      new window.google.maps.LatLngBounds();
+
+    route.path.forEach(
+      (point) => {
+        bounds.extend({
+          lat:
+            point.lat,
+
+          lng:
+            point.lng,
+        });
+      }
+    );
+
+    map.fitBounds(
+      bounds,
+      80
+    );
+  }, [
+    map,
+    route,
+  ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | LOADING
+  |--------------------------------------------------------------------------
+  */
+
+  if (
+    placeLoading
+  ) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-slate-100">
-        <div className="rounded-xl bg-white px-5 py-4 shadow">
-          Loading place...
+        <div className="rounded-2xl bg-white px-6 py-5 text-sm font-semibold text-slate-700 shadow">
+          Loading destination...
         </div>
       </div>
     );
@@ -1775,26 +2707,26 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Google Maps error
+  | GOOGLE MAP ERROR
   |--------------------------------------------------------------------------
   */
 
-  if (loadError) {
+  if (
+    loadError
+  ) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-red-50 p-6">
-        <div className="max-w-md rounded-xl bg-white p-5 shadow">
-          <h2 className="font-semibold text-red-600">
+        <div className="max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+          <h2 className="text-lg font-bold text-red-600">
             Google Maps failed to load
           </h2>
 
-          <p className="mt-2 text-sm text-slate-600">
-            Check your Google Maps
-            API key and make sure
-            the Maps JavaScript API
-            and Routes API are
-            available for your
-            current configuration.
+          <p className="mt-2 text-sm leading-6 text-slate-600">
+            Check your
+            VITE_GOOGLE_MAPS_API_KEY.
           </p>
+
         </div>
       </div>
     );
@@ -1802,21 +2734,49 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Place error
+  | MAP LOADING
   |--------------------------------------------------------------------------
   */
 
-  if (placeError) {
+  if (!isLoaded) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-slate-100">
+
+        <div className="rounded-2xl bg-white px-6 py-5 text-center shadow">
+
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600" />
+
+          <p className="mt-3 text-sm font-semibold text-slate-700">
+            Loading map...
+          </p>
+
+        </div>
+
+      </div>
+    );
+  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | DESTINATION ERROR
+  |--------------------------------------------------------------------------
+  */
+
+  if (
+    placeError
+  ) {
     return (
       <div className="flex h-full w-full items-center justify-center bg-red-50 p-6">
-        <div className="max-w-md rounded-xl bg-white p-5 shadow">
-          <h2 className="font-semibold text-red-600">
-            Unable to load place
+        <div className="max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+          <h2 className="text-lg font-bold text-red-600">
+            Unable to load destination
           </h2>
 
           <p className="mt-2 text-sm text-slate-600">
             {placeError}
           </p>
+
         </div>
       </div>
     );
@@ -1824,617 +2784,260 @@ export default function Placemap({
 
   /*
   |--------------------------------------------------------------------------
-  | Missing Google Place ID
+  | INVALID DESTINATION
   |--------------------------------------------------------------------------
   */
 
   if (
-    place &&
-    !place.googlePlaceId
+    !destination
   ) {
     return (
-      <div className="flex h-full w-full items-center justify-center bg-amber-50 p-6">
-        <div className="max-w-md rounded-xl bg-white p-6 shadow">
-          <h2 className="text-lg font-semibold text-amber-700">
-            Google Place ID missing
+      <div className="flex h-full w-full items-center justify-center bg-red-50 p-6">
+
+        <div className="rounded-2xl bg-white p-6 shadow-xl">
+
+          <h2 className="font-bold text-red-600">
+            Invalid destination
           </h2>
 
-          <p className="mt-2 text-sm text-slate-600">
-            This destination has
-            not been resolved with
-            Google Places yet.
+          <p className="mt-2 text-sm text-slate-500">
+            Valid latitude and longitude
+            are required for navigation.
           </p>
 
-          <p className="mt-3 text-xs text-slate-500">
-            Place:{" "}
-            {place.name}
-          </p>
         </div>
+
       </div>
     );
   }
 
   /*
   |--------------------------------------------------------------------------
-  | Missing destination
-  |--------------------------------------------------------------------------
-  */
-
-  if (!destination) {
-    return (
-      <div className="flex h-full w-full items-center justify-center bg-red-50 p-6">
-        <div className="rounded-xl bg-white p-5 shadow">
-          Invalid destination.
-        </div>
-      </div>
-    );
-  }
-
-  /*
-  |--------------------------------------------------------------------------
-  | Render
+  | UI
   |--------------------------------------------------------------------------
   */
 
   return (
-    <div className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-slate-50 lg:flex-row">
+    <>
+      <style>
+        {`
+          @keyframes cardEnter {
+            from {
+              opacity: 0;
+              transform: translateY(8px);
+            }
 
-      {/* ==================================================================
-          LEFT RECOMMENDATION PANEL
-          ================================================================== */}
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
 
-      <aside className="flex h-[55%] w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:h-full lg:w-[420px] lg:border-b-0 lg:border-r xl:w-[450px]">
+          @keyframes softPulse {
+            0%, 100% {
+              transform: scale(1);
+              opacity: 1;
+            }
 
-        {/* ----------------------------------------------------------------
-            Destination header
-            ---------------------------------------------------------------- */}
+            50% {
+              transform: scale(1.08);
+              opacity: 0.8;
+            }
+          }
 
-        <div className="shrink-0 border-b border-slate-200 px-5 pb-4 pt-5">
+          @keyframes markerPulse {
+            0%, 100% {
+              box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.28);
+            }
 
-          <div className="flex items-start gap-3">
+            50% {
+              box-shadow: 0 0 0 10px rgba(37, 99, 235, 0);
+            }
+          }
 
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-xl">
-              📍
-            </div>
+          .journey-card {
+            animation: cardEnter 0.3s ease-out both;
+          }
 
-            <div className="min-w-0 flex-1">
+          .route-location-dot {
+            animation: markerPulse 2s infinite;
+          }
 
-              <div className="flex items-center justify-between gap-3">
+          .category-icon-pulse {
+            animation: softPulse 2.5s ease-in-out infinite;
+          }
+        `}
+      </style>
 
-                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-blue-600">
-                  Your destination
-                </p>
+      <div className="flex h-[calc(100vh-72px)] w-full flex-col overflow-hidden bg-slate-50 lg:flex-row">
 
-                {isNavigating && (
-                  <span className="rounded-full bg-green-100 px-2.5 py-1 text-[10px] font-bold text-green-700">
-                    Navigating
+        {/* ==============================================================
+            LEFT PANEL
+            ============================================================== */}
+
+        <aside className="flex h-[62%] w-full shrink-0 flex-col border-b border-slate-200 bg-white lg:h-full lg:w-[430px] lg:border-b-0 lg:border-r">
+
+          {/* ============================================================
+              HEADER
+              ============================================================ */}
+
+          <div className="shrink-0 border-b border-slate-200 bg-white px-4 pb-3.5 pt-4">
+
+            <div className="flex items-center justify-between gap-3">
+
+              <div className="min-w-0">
+
+                <div className="flex items-center gap-2">
+
+                  <span className="category-icon-pulse text-sm">
+                    🏍️
                   </span>
-                )}
+
+                  <p className="text-[10px] font-black uppercase tracking-[0.16em] text-blue-600">
+                    Discover Bharatpur
+                  </p>
+
+                </div>
+
+                <h1 className="mt-1 text-xl font-extrabold tracking-tight text-slate-900">
+                  Rider Stops
+                </h1>
+
+                <p className="mt-0.5 text-[10px] text-slate-500">
+                  Fuel, food, service and places
+                  worth a stop.
+                </p>
 
               </div>
 
-              <h2 className="mt-1 truncate text-xl font-bold text-slate-900">
-                {place?.name ||
-                  "Destination"}
-              </h2>
-
-              {place?.formattedAddress && (
-                <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-500">
-                  {
-                    place.formattedAddress
-                  }
-                </p>
+              {isNavigating && (
+                <span className="shrink-0 rounded-full bg-green-100 px-2.5 py-1 text-[9px] font-black text-green-700">
+                  ● LIVE
+                </span>
               )}
 
             </div>
 
-          </div>
+            {/* Destination */}
 
-          <div className="mt-4 rounded-2xl bg-slate-50 p-3.5">
+            <div className="mt-3 flex items-center gap-2.5 rounded-xl bg-slate-50 px-3 py-2.5">
 
-            <div className="flex items-center gap-2">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-green-100 text-sm">
+                ⚑
+              </div>
 
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-white text-sm shadow-sm">
-                ✨
-              </span>
+              <div className="min-w-0 flex-1">
 
-              <p className="text-xs font-semibold text-slate-800">
-                About this destination
-              </p>
+                <p className="text-[8px] font-bold uppercase tracking-wide text-slate-400">
+                  Destination
+                </p>
 
-            </div>
-
-            <p className="mt-2 text-xs leading-5 text-slate-500">
-              A popular travel
-              destination known for
-              wildlife, nature, bird
-              watching, rivers and
-              memorable outdoor
-              experiences.
-            </p>
-
-          </div>
-
-          {/* Route summary */}
-
-          <div className="mt-3 grid grid-cols-3 gap-2">
-
-            <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5">
-
-              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                Route
-              </p>
-
-              <p className="mt-0.5 text-sm font-bold text-slate-900">
-                {formatDistance(
-                  route?.distanceMeters
-                )}
-              </p>
-
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5">
-
-              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                Remaining
-              </p>
-
-              <p className="mt-0.5 text-sm font-bold text-slate-900">
-                {formatDistance(
-                  distanceToDestination
-                )}
-              </p>
-
-            </div>
-
-            <div className="rounded-2xl border border-slate-200 bg-white px-3 py-2.5">
-
-              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-400">
-                ETA
-              </p>
-
-              <p className="mt-0.5 text-sm font-bold text-slate-900">
-                {eta !== null
-                  ? `${eta} min`
-                  : "--"}
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ==================================================================
-            DYNAMIC RECOMMENDATION SECTION
-            ================================================================== */}
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-
-          <div className="flex items-start justify-between gap-3 px-1">
-
-            <div>
-
-              <div className="flex items-center gap-2">
-
-                <h3 className="text-sm font-bold text-slate-900">
-                  Recommended stops
-                </h3>
-
-                {nearbyPlaces.length >
-                  0 && (
-                  <span className="rounded-full bg-blue-50 px-2 py-0.5 text-[9px] font-bold text-blue-700">
-                    Route-aware
-                  </span>
-                )}
+                <p className="truncate text-[12px] font-extrabold text-slate-900">
+                  {
+                    place?.name ||
+                    "Destination"
+                  }
+                </p>
 
               </div>
 
-              <p className="mt-0.5 text-[11px] text-slate-500">
-                Places ahead on your
-                route
-              </p>
+              {isNavigating && (
+                <div className="shrink-0 text-right">
 
-            </div>
+                  <p className="text-[8px] font-bold uppercase tracking-wide text-slate-400">
+                    Left
+                  </p>
 
-            <button
-              type="button"
-              onClick={
-                refreshRecommendations
-              }
-              disabled={
-                nearbyLoading ||
-                !routeMetrics
-              }
-              className="shrink-0 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-[10px] font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {nearbyLoading
-                ? "Analyzing..."
-                : "Refresh"}
-            </button>
-
-          </div>
-
-          {/* Category filters */}
-
-          <div className="mt-3 flex gap-2 overflow-x-auto pb-1">
-
-            {RECOMMENDATION_CATEGORIES.map(
-              (
-                category
-              ) => {
-                const active =
-                  activeCategory ===
-                  category.key;
-
-                return (
-                  <button
-                    key={
-                      category.key
-                    }
-                    type="button"
-                    onClick={() =>
-                      setActiveCategory(
-                        category.key
+                  <p className="text-[11px] font-black text-blue-600">
+                    {
+                      formatDistance(
+                        distanceToDestination
                       )
                     }
-                    className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-semibold transition ${
-                      active
-                        ? "border-blue-600 bg-blue-600 text-white"
-                        : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
-                    }`}
-                  >
-                    <span aria-hidden="true">
-                      {
-                        category.icon
-                      }
-                    </span>
+                  </p>
 
-                    {
-                      category.label
-                    }
-                  </button>
-                );
-              }
-            )}
-
-          </div>
-
-          {/* Status */}
-
-          <div className="mt-3 flex items-center gap-2 px-1">
-
-            <span
-              className={`h-2 w-2 rounded-full ${
-                nearbyLoading
-                  ? "animate-pulse bg-amber-400"
-                  : nearbyPlaces.length >
-                      0
-                    ? "bg-green-500"
-                    : routeMetrics
-                      ? "bg-slate-300"
-                      : "bg-blue-500"
-              }`}
-            />
-
-            <p className="text-[10px] text-slate-400">
-
-              {nearbyLoading
-                ? "Analyzing the route and finding places ahead..."
-                : nearbyPlaces.length >
-                    0
-                  ? "Results are ordered by where they appear on your journey"
-                  : routeMetrics
-                    ? "No suitable route-side places found yet"
-                    : "Start navigation to analyze places along the route"}
-
-            </p>
-
-          </div>
-
-          {/* Error */}
-
-          {nearbyError && (
-            <div className="mt-3 rounded-xl border border-amber-100 bg-amber-50 px-3 py-2.5">
-
-              <p className="text-[10px] leading-4 text-amber-700">
-                {
-                  nearbyError
-                }
-              </p>
+                </div>
+              )}
 
             </div>
-          )}
 
-          {/* Loading */}
+            {/* =========================================================
+                RIDER CATEGORY FILTER
+                ========================================================= */}
 
-          {nearbyLoading &&
-            nearbyPlaces.length ===
-              0 && (
-              <div className="mt-4 space-y-3">
+            <div className="mt-3">
 
-                {[1, 2, 3].map(
-                  (
-                    item
-                  ) => (
-                    <div
-                      key={
-                        item
-                      }
-                      className="animate-pulse rounded-2xl border border-slate-100 p-3"
-                    >
+              <div className="mb-1.5 flex items-center justify-between">
 
-                      <div className="flex gap-3">
-
-                        <div className="h-[68px] w-[74px] rounded-xl bg-slate-100" />
-
-                        <div className="flex-1 space-y-2">
-
-                          <div className="h-3 w-3/4 rounded bg-slate-100" />
-
-                          <div className="h-3 w-1/3 rounded bg-slate-100" />
-
-                          <div className="h-3 w-full rounded bg-slate-100" />
-
-                          <div className="h-3 w-2/3 rounded bg-slate-100" />
-
-                        </div>
-
-                      </div>
-
-                    </div>
-                  )
-                )}
-
-              </div>
-            )}
-
-          {/* No route */}
-
-          {!nearbyLoading &&
-            !routeMetrics && (
-              <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
-
-                <div className="text-2xl">
-                  🧭
-                </div>
-
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  Route analysis starts
-                  with navigation
+                <p className="text-[8px] font-black uppercase tracking-wide text-slate-400">
+                  Quick categories
                 </p>
 
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Once a route is
-                  calculated, this panel
-                  will search for useful
-                  places along it.
+                <p className="text-[8px] text-slate-400">
+                  {staticPlaces.length} stops
                 </p>
 
               </div>
-            )}
 
-          {/* No recommendations */}
+              <div className="flex gap-1.5 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-          {!nearbyLoading &&
-            routeMetrics &&
-            visibleNearbyPlaces.length ===
-              0 && (
-              <div className="mt-4 rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
+                {Object.values(
+                  PLACE_CATEGORIES
+                ).map(
+                  (category) => {
 
-                <div className="text-2xl">
-                  🔎
-                </div>
+                    const count =
+                      categoryCounts[
+                        category.key
+                      ] || 0;
 
-                <p className="mt-2 text-sm font-semibold text-slate-800">
-                  No matching stops
-                  found
-                </p>
-
-                <p className="mt-1 text-xs leading-5 text-slate-500">
-                  Try another category
-                  or refresh the route
-                  recommendations.
-                </p>
-
-              </div>
-            )}
-
-          {/* Dynamic recommendation cards */}
-
-          {visibleNearbyPlaces.length >
-            0 && (
-            <div className="relative mt-4">
-
-              <div className="pointer-events-none absolute bottom-5 left-[11px] top-2 w-px bg-slate-200" />
-
-              <div className="space-y-4">
-
-                {visibleNearbyPlaces.map(
-                  (
-                    item,
-                    index
-                  ) => {
-                    const categoryKey =
-                      item.categoryKeys?.find(
-                        (
-                          key
-                        ) =>
-                          key !==
-                          "all"
-                      ) ||
-                      "attraction";
-
-                    const category =
-                      getCategoryDefinition(
-                        categoryKey
-                      );
-
-                    const stopDistance =
-                      Math.max(
-                        0,
-                        item.liveDistanceAheadMeters
-                      );
+                    const active =
+                      activeCategory ===
+                      category.key;
 
                     return (
-                      <div
+                      <button
                         key={
-                          item.id
+                          category.key
                         }
-                        className="relative pl-7"
+                        type="button"
+                        onClick={() =>
+                          setActiveCategory(
+                            category.key
+                          )
+                        }
+                        className={`flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1.5 text-[9px] font-bold transition-all duration-200 ${
+                          active
+                            ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+                            : "border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:bg-blue-50"
+                        }`}
                       >
 
-                        {/* Timeline marker */}
-
-                        <div
-                          className={`absolute left-0 top-12 flex h-[23px] w-[23px] items-center justify-center rounded-full border-4 border-white text-[9px] font-bold shadow-sm ${
-                            index ===
-                            0
-                              ? "bg-blue-600 text-white"
-                              : "bg-slate-200 text-slate-500"
-                          }`}
-                        >
+                        <span>
                           {
-                            index +
-                              1
+                            category.icon
                           }
-                        </div>
+                        </span>
 
-                        {/* Distance */}
+                        <span>
+                          {
+                            category.label
+                          }
+                        </span>
 
-                        <div className="mb-1.5 flex items-center justify-between px-1">
-
-                          <span className="text-[11px] font-medium text-slate-500">
-                            {
-                              getApproximateStopTime(
-                                stopDistance
-                              )
-                            }
+                        {count > 0 && (
+                          <span
+                            className={`rounded-full px-1.5 py-0.5 text-[7px] ${
+                              active
+                                ? "bg-white/20 text-white"
+                                : "bg-slate-100 text-slate-500"
+                            }`}
+                          >
+                            {count}
                           </span>
+                        )}
 
-                          <span className="text-[11px] font-bold text-slate-700">
-                            {
-                              formatDistance(
-                                stopDistance
-                              )
-                            }{" "}
-                            ahead
-                          </span>
-
-                        </div>
-
-                        {/* Card */}
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedNearbyPlace(
-                              item
-                            );
-
-                            if (
-                              map
-                            ) {
-                              map.panTo(
-                                item.coordinates
-                              );
-
-                              map.setZoom(
-                                15
-                              );
-                            }
-                          }}
-                          className="w-full rounded-2xl border border-slate-200 bg-white p-3 text-left shadow-sm transition hover:border-blue-300 hover:shadow-md"
-                        >
-
-                          <div className="flex gap-3">
-
-                            {/* Category icon */}
-
-                            <div className="flex h-[68px] w-[74px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-slate-100">
-
-                              <span className="text-2xl">
-                                {
-                                  category.icon
-                                }
-                              </span>
-
-                            </div>
-
-                            {/* Information */}
-
-                            <div className="min-w-0 flex-1">
-
-                              <div className="flex items-start justify-between gap-2">
-
-                                <div className="min-w-0">
-
-                                  <h4 className="truncate text-sm font-bold text-slate-900">
-                                    {
-                                      item.name ||
-                                      "Nearby place"
-                                    }
-                                  </h4>
-
-                                  <p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-blue-600">
-                                    {
-                                      category.label
-                                    }
-                                  </p>
-
-                                </div>
-
-                                {item.source ===
-                                  "openstreetmap" && (
-                                  <span className="shrink-0 rounded-full bg-slate-50 px-2 py-1 text-[9px] font-bold text-slate-500">
-                                    Route stop
-                                  </span>
-                                )}
-
-                              </div>
-
-                              {/* OSM star information if available */}
-
-                              {Number.isFinite(
-                                Number(
-                                  item.rating
-                                )
-                              ) && (
-                                <div className="mt-1.5">
-
-                                  <span className="text-[10px] font-bold text-slate-700">
-                                    {Number(
-                                      item.rating
-                                    ).toFixed(
-                                      1
-                                    )}{" "}
-                                    ★
-                                  </span>
-
-                                </div>
-                              )}
-
-                              <p className="mt-1.5 line-clamp-2 text-[11px] leading-4.5 text-slate-500">
-                                {
-                                  item.description
-                                }
-                              </p>
-
-                              {item.vicinity && (
-                                <p className="mt-1 line-clamp-1 text-[10px] text-slate-400">
-                                  {
-                                    item.vicinity
-                                  }
-                                </p>
-                              )}
-
-                            </div>
-
-                          </div>
-
-                        </button>
-
-                      </div>
+                      </button>
                     );
                   }
                 )}
@@ -2442,591 +3045,929 @@ export default function Placemap({
               </div>
 
             </div>
-          )}
 
-        </div>
+            {/* Route stats */}
 
-        {/* ==================================================================
-            Navigation controls
-            ================================================================== */}
+            <div className="mt-2.5 grid grid-cols-3 gap-1.5">
 
-        <div className="shrink-0 border-t border-slate-200 bg-white p-3.5">
+              <div className="rounded-lg bg-slate-50 px-2 py-1.5">
 
-          {!isNavigating ? (
-            <button
-              type="button"
-              onClick={
-                startNavigation
-              }
-              disabled={
-                loadingRoute
-              }
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-
-              <span aria-hidden="true">
-                ▶
-              </span>
-
-              {loadingRoute
-                ? "Calculating route..."
-                : "Start Navigation"}
-
-            </button>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-
-              <button
-                type="button"
-                onClick={
-                  recalculateRoute
-                }
-                disabled={
-                  loadingRoute
-                }
-                className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-sm font-bold text-slate-800 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loadingRoute
-                  ? "Loading..."
-                  : "Recalculate"}
-              </button>
-
-              <button
-                type="button"
-                onClick={
-                  stopNavigation
-                }
-                className="rounded-xl bg-red-600 px-3 py-3 text-sm font-bold text-white transition hover:bg-red-700"
-              >
-                Stop Navigation
-              </button>
-
-            </div>
-          )}
-
-          {/* Alternative routes */}
-
-          {safeRoutes.length >
-            1 && (
-            <div className="mt-3">
-
-              <div className="mb-2 flex items-center justify-between">
-
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                  Alternative routes
+                <p className="text-[7px] font-bold uppercase tracking-wide text-slate-400">
+                  Route
                 </p>
 
-                <span className="text-[10px] text-slate-400">
-                  {
-                    safeRoutes.length
-                  }{" "}
-                  available
-                </span>
+                <p className="mt-0.5 text-[10px] font-black text-slate-800">
+                  {isNavigating
+                    ? `#${selectedRoute + 1}`
+                    : "--"}
+                </p>
 
               </div>
 
-              <div className="flex gap-2 overflow-x-auto pb-1">
+              <div className="rounded-lg bg-slate-50 px-2 py-1.5">
 
-                {safeRoutes.map(
-                  (
-                    routeItem,
-                    index
-                  ) => (
-                    <button
-                      key={
-                        index
-                      }
-                      type="button"
-                      onClick={() =>
-                        selectRoute(
-                          index
-                        )
-                      }
-                      className={`min-w-[105px] rounded-xl border px-3 py-2 text-left transition ${
-                        selectedRoute ===
-                        index
-                          ? "border-blue-600 bg-blue-50"
-                          : "border-slate-200 bg-white hover:bg-slate-50"
-                      }`}
-                    >
+                <p className="text-[7px] font-bold uppercase tracking-wide text-slate-400">
+                  Progress
+                </p>
 
-                      <p className="text-xs font-bold text-slate-900">
-                        Route{" "}
-                        {index +
-                          1}
-                      </p>
+                <p className="mt-0.5 text-[10px] font-black text-slate-800">
+                  {isNavigating
+                    ? `${Math.round(
+                        currentProgressPercent
+                      )}%`
+                    : "--"}
+                </p>
 
-                      <p className="mt-1 text-[10px] text-slate-500">
-                        {
-                          formatDistance(
-                            routeItem.distanceMeters
-                          )
-                        }
-                      </p>
+              </div>
 
-                      <p className="text-[10px] text-slate-500">
-                        {
-                          formatDuration(
-                            routeItem.durationMillis
-                          )
-                        }
-                      </p>
+              <div className="rounded-lg bg-slate-50 px-2 py-1.5">
 
-                    </button>
-                  )
-                )}
+                <p className="text-[7px] font-bold uppercase tracking-wide text-slate-400">
+                  ETA
+                </p>
+
+                <p className="mt-0.5 text-[10px] font-black text-slate-800">
+                  {isNavigating &&
+                  eta !== null
+                    ? `${eta}m`
+                    : "--"}
+                </p>
 
               </div>
 
             </div>
-          )}
 
-        </div>
+          </div>
 
-      </aside>
+          {/* ============================================================
+              TIMELINE
+              ============================================================ */}
 
-      {/* ==================================================================
-          RIGHT MAP
-          ================================================================== */}
+          <div className="relative min-h-0 flex-1 overflow-y-auto bg-slate-50 px-3.5 py-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-      <section className="relative min-h-0 flex-1 bg-slate-100">
+            {!isNavigating ? (
 
-        <GoogleMap
-          mapContainerStyle={
-            MAP_CONTAINER_STYLE
-          }
-          center={
-            mapCenter
-          }
-          zoom={14}
-          onLoad={
-            onMapLoad
-          }
-          onUnmount={
-            onMapUnmount
-          }
-          options={{
-            streetViewControl:
-              false,
+              <div className="flex h-full items-center justify-center">
 
-            mapTypeControl:
-              false,
+                <div className="w-full rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm">
 
-            fullscreenControl:
-              true,
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-2xl">
+                    🏍️
+                  </div>
 
-            clickableIcons:
-              true,
+                  <h2 className="mt-3 text-base font-extrabold text-slate-900">
+                    Ready to ride?
+                  </h2>
 
-            gestureHandling:
-              "greedy",
-          }}
-        >
-
-          {/* Destination marker */}
-
-          <Marker
-            position={{
-              lat:
-                destination.lat,
-
-              lng:
-                destination.lng,
-            }}
-            title={
-              place?.name ||
-              "Destination"
-            }
-            onClick={() =>
-              setShowDestinationInfo(
-                true
-              )
-            }
-          />
-
-          {/* Destination info */}
-
-          {showDestinationInfo && (
-            <InfoWindow
-              position={{
-                lat:
-                  destination.lat,
-
-                lng:
-                  destination.lng,
-              }}
-              onCloseClick={() =>
-                setShowDestinationInfo(
-                  false
-                )
-              }
-            >
-              <div className="min-w-[190px]">
-
-                <h3 className="font-semibold text-slate-900">
-                  {
-                    place?.name ||
-                    "Destination"
-                  }
-                </h3>
-
-                {place?.formattedAddress && (
-                  <p className="mt-1 text-xs text-slate-500">
-                    {
-                      place.formattedAddress
-                    }
+                  <p className="mt-1.5 text-xs leading-5 text-slate-500">
+                    Start navigation to open your
+                    rider timeline and useful stops.
                   </p>
-                )}
+
+                </div>
 
               </div>
-            </InfoWindow>
-          )}
 
-          {/* Current GPS marker */}
+            ) : (
 
-          {position && (
-            <Marker
-              position={{
-                lat:
-                  position.lat,
+              <div className="relative pb-6">
 
-                lng:
-                  position.lng,
-              }}
-              title="Your location"
-              icon={{
-                path:
-                  window.google
-                    ?.maps
-                    ?.SymbolPath
-                    ?.CIRCLE,
+                {/* ======================================================
+                    VERTICAL TIMELINE
+                    ====================================================== */}
 
-                scale: 8,
+                <div className="pointer-events-none absolute bottom-7 left-[22px] top-2 z-0 w-[3px] rounded-full bg-slate-200">
 
-                fillColor:
-                  "#2563eb",
+                  <div
+                    className="absolute left-0 top-0 w-full rounded-full bg-blue-500 transition-all duration-700"
+                    style={{
+                      height: `${Math.min(
+                        100,
+                        currentProgressPercent
+                      )}%`,
+                    }}
+                  />
 
-                fillOpacity: 1,
+                  {/* Current position */}
 
-                strokeColor:
-                  "#ffffff",
+                  <div
+                    className="route-location-dot absolute left-1/2 flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-blue-600 shadow-lg transition-all duration-700"
+                    style={{
+                      top: `${Math.min(
+                        100,
+                        Math.max(
+                          0,
+                          currentProgressPercent
+                        )
+                      )}%`,
+                    }}
+                  >
+                    <div className="h-1.5 w-1.5 rounded-full bg-white" />
+                  </div>
 
-                strokeWeight: 3,
-              }}
-            />
-          )}
+                  {/* Destination */}
 
-          {/* Existing real route */}
+                  <div className="absolute bottom-0 left-1/2 flex h-9 w-9 -translate-x-1/2 translate-y-1/2 items-center justify-center rounded-full border-4 border-white bg-green-600 text-sm shadow-lg">
+                    ⚑
+                  </div>
 
-          {route?.path?.length >
-            1 && (
-            <Polyline
-              path={
-                route.path
-              }
-              options={{
-                strokeColor:
-                  "#2563eb",
+                </div>
 
-                strokeOpacity:
-                  0.9,
+                {/* Current location */}
 
-                strokeWeight:
-                  6,
+                <div className="relative z-10 mb-5 ml-10">
 
-                geodesic:
-                  true,
+                  <div className="inline-flex items-center gap-2 rounded-full border border-blue-100 bg-white px-2.5 py-1.5 text-[9px] font-bold text-blue-700 shadow-sm">
 
-                zIndex: 10,
-              }}
-            />
-          )}
+                    <span className="h-1.5 w-1.5 rounded-full bg-blue-600" />
 
-          {/* Dynamic recommendation markers */}
+                    Current location
 
-          {visibleNearbyPlaces.map(
-            (item) => {
-              const categoryKey =
-                item.categoryKeys?.find(
-                  (
-                    key
-                  ) =>
-                    key !==
-                    "all"
-                ) ||
-                "attraction";
+                    {speed !== null && (
+                      <span className="text-slate-400">
+                        {speed.toFixed(0)} km/h
+                      </span>
+                    )}
 
-              const selected =
-                selectedNearbyPlace?.id ===
-                item.id;
+                  </div>
 
-              return (
-                <Marker
-                  key={`recommendation-${item.id}`}
-                  position={
-                    item.coordinates
-                  }
-                  title={
-                    item.name ||
-                    "Recommended stop"
-                  }
-                  icon={{
-                    path:
-                      window.google
-                        ?.maps
-                        ?.SymbolPath
-                        ?.CIRCLE,
+                </div>
 
-                    scale:
-                      selected
-                        ? 9
-                        : 6,
+                {/* ======================================================
+                    FILTERED PLACE CARDS
+                    ====================================================== */}
 
-                    fillColor:
-                      getMarkerColor(
-                        categoryKey
-                      ),
+                <div className="relative z-10 ml-10">
 
-                    fillOpacity: 1,
+                  {filteredPlaces.map(
+                    (
+                      item,
+                      index
+                    ) => {
 
-                    strokeColor:
-                      "#ffffff",
+                      const isExpanded =
+                        expandedPlaceId ===
+                        item.id;
 
-                    strokeWeight: 2,
-                  }}
-                  onClick={() =>
-                    setSelectedNearbyPlace(
-                      item
-                    )
-                  }
-                />
-              );
-            }
-          )}
+                      return (
+                        <article
+                          key={
+                            item.id
+                          }
+                          className="journey-card relative mb-3.5 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+                          style={{
+                            animationDelay: `${
+                              index * 50
+                            }ms`,
+                          }}
+                        >
 
-          {/* Recommendation info window */}
+                          {/* Timeline connector */}
 
-          {selectedNearbyPlace && (
-            <InfoWindow
-              position={
-                selectedNearbyPlace.coordinates
-              }
-              onCloseClick={() =>
-                setSelectedNearbyPlace(
-                  null
-                )
-              }
-            >
-              <div className="min-w-[220px]">
+                          <div className="pointer-events-none absolute -left-[18px] top-7 h-px w-[18px] bg-slate-200" />
 
-                <div className="flex items-start justify-between gap-3">
+                          {/* Timeline node */}
 
-                  <div>
+                          <div
+                            className={`absolute -left-[31px] top-[18px] flex h-6 w-6 items-center justify-center rounded-full border-4 border-slate-50 text-[8px] font-black text-white shadow ${
+                              item.isHidden
+                                ? "bg-violet-600"
+                                : "bg-slate-700"
+                            }`}
+                          >
+                            {
+                              index +
+                              1
+                            }
+                          </div>
 
-                    <h3 className="font-semibold text-slate-900">
+                          {/* Category + Hidden */}
+
+                          <div className="flex items-center justify-between gap-2">
+
+                            <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2 py-1 text-[8px] font-bold text-slate-600">
+
+                              <span>
+                                {
+                                  item.categoryIcon
+                                }
+                              </span>
+
+                              {
+                                item.categoryLabel
+                              }
+
+                            </span>
+
+                            {item.isHidden && (
+                              <span className="rounded-full bg-violet-50 px-2 py-1 text-[7px] font-black text-violet-600">
+                                Hidden
+                              </span>
+                            )}
+
+                          </div>
+
+                          {/* Name / Location */}
+
+                          <div className="mt-2.5 min-w-0">
+
+                            <div className="flex items-start justify-between gap-2">
+
+                              <h2 className="min-w-0 flex-1 text-[12px] font-extrabold leading-4 text-slate-900">
+                                {
+                                  item.name
+                                }
+                              </h2>
+
+                              {isNavigating &&
+                                item.coordinates &&
+                                position && (
+                                  <span className="shrink-0 rounded-full bg-blue-50 px-2 py-1 text-[8px] font-bold text-blue-600">
+                                    {
+                                      formatDistance(
+                                        haversineDistanceMeters(
+                                          position,
+                                          item.coordinates
+                                        )
+                                      )
+                                    }
+                                  </span>
+                                )}
+
+                            </div>
+
+                            <p className="mt-0.5 line-clamp-1 text-[8px] text-slate-400">
+                              {
+                                cleanText(
+                                  item.location ||
+                                    item.formattedAddress ||
+                                    "Bharatpur, Chitwan"
+                                )
+                              }
+                            </p>
+
+                          </div>
+
+                          {/* Short description */}
+
+                          <div className="mt-2">
+
+                            {isExpanded ? (
+
+                              <p className="text-[10px] leading-4 text-slate-500">
+                                {
+                                  cleanText(
+                                    item.description ||
+                                      item.conciseDescription
+                                  )
+                                }
+                              </p>
+
+                            ) : (
+
+                              <p className="line-clamp-2 text-[10px] leading-4 text-slate-500">
+                                {
+                                  item.conciseDescription
+                                }
+                              </p>
+
+                            )}
+
+                            {cleanText(
+                              item.description
+                            ).length >
+                              item.conciseDescription.length && (
+
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedPlaceId(
+                                    (
+                                      current
+                                    ) =>
+                                      current ===
+                                      item.id
+                                        ? null
+                                        : item.id
+                                  )
+                                }
+                                className="mt-1 inline-flex items-center gap-1 text-[8px] font-black text-blue-600"
+                              >
+
+                                {isExpanded
+                                  ? "Show less"
+                                  : "Read more"}
+
+                                <span
+                                  className={`transition-transform duration-200 ${
+                                    isExpanded
+                                      ? "rotate-180"
+                                      : ""
+                                  }`}
+                                >
+                                  ↓
+                                </span>
+
+                              </button>
+
+                            )}
+
+                          </div>
+
+                          {/* Compact actions */}
+
+                          <div className="mt-2.5 flex gap-1.5">
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                showPlaceOnMap(
+                                  item
+                                )
+                              }
+                              className="flex-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-[8px] font-bold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+                            >
+                              👁 View
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openDirections(
+                                  item
+                                )
+                              }
+                              className="flex-1 rounded-lg bg-blue-600 px-2 py-1.5 text-[8px] font-bold text-white transition hover:bg-blue-700"
+                            >
+                              🧭 Go
+                            </button>
+
+                          </div>
+
+                        </article>
+                      );
+                    }
+                  )}
+
+                </div>
+
+                {/* ======================================================
+                    DESTINATION
+                    ====================================================== */}
+
+                <div className="relative z-10 ml-10 mt-6 flex items-center gap-2.5">
+
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-green-600 text-sm text-white shadow">
+                    ⚑
+                  </div>
+
+                  <div className="rounded-xl bg-white px-2.5 py-2 shadow-sm">
+
+                    <p className="text-[7px] font-bold uppercase tracking-wide text-slate-400">
+                      Destination
+                    </p>
+
+                    <p className="mt-0.5 max-w-[230px] truncate text-[10px] font-extrabold text-slate-800">
                       {
-                        selectedNearbyPlace.name
-                      }
-                    </h3>
-
-                    <p className="mt-1 text-xs font-medium text-blue-600">
-                      {
-                        selectedCategory?.label ||
-                        "Nearby place"
+                        place?.name ||
+                        "Destination"
                       }
                     </p>
 
                   </div>
 
-                  {Number.isFinite(
-                    Number(
-                      selectedNearbyPlace.rating
-                    )
-                  ) && (
-                    <span className="text-xs font-bold text-slate-700">
-                      {Number(
-                        selectedNearbyPlace.rating
-                      ).toFixed(
-                        1
-                      )}{" "}
-                      ★
-                    </span>
+                </div>
+
+              </div>
+            )}
+
+          </div>
+
+          {/* ============================================================
+              NAVIGATION CONTROLS
+              ============================================================ */}
+
+          <div className="shrink-0 border-t border-slate-200 bg-white p-3">
+
+            {!isNavigating ? (
+
+              <button
+                type="button"
+                onClick={
+                  startNavigation
+                }
+                disabled={
+                  loadingRoute
+                }
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-blue-600 px-4 py-3 text-xs font-black text-white shadow-sm transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+
+                🧭
+
+                {loadingRoute
+                  ? "Preparing route..."
+                  : "Start Navigation"}
+
+              </button>
+
+            ) : (
+
+              <div className="grid grid-cols-2 gap-2">
+
+                <button
+                  type="button"
+                  onClick={
+                    recalculateRoute
+                  }
+                  disabled={
+                    loadingRoute
+                  }
+                  className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-[10px] font-bold text-slate-800 transition hover:bg-slate-50 disabled:opacity-50"
+                >
+
+                  {loadingRoute
+                    ? "Loading..."
+                    : "↻ Recalculate"}
+
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    stopNavigation
+                  }
+                  className="rounded-xl bg-red-600 px-3 py-2.5 text-[10px] font-bold text-white transition hover:bg-red-700"
+                >
+                  ■ Stop
+                </button>
+
+              </div>
+
+            )}
+
+            {/* ==========================================================
+                ROUTE 1 / 2 / 3
+                ========================================================== */}
+
+            {isNavigating &&
+              routes.length >
+                0 && (
+
+              <div className="mt-2.5">
+
+                <div className="mb-1.5 flex items-center justify-between">
+
+                  <p className="text-[8px] font-black uppercase tracking-wide text-slate-400">
+                    Route options
+                  </p>
+
+                  <p className="text-[8px] text-slate-400">
+                    {
+                      routes.length
+                    } available
+                  </p>
+
+                </div>
+
+                <div className="grid grid-cols-3 gap-1.5">
+
+                  {routes.map(
+                    (
+                      routeItem,
+                      index
+                    ) => {
+
+                      const active =
+                        selectedRoute ===
+                        index;
+
+                      return (
+                        <button
+                          key={
+                            routeItem.index
+                          }
+                          type="button"
+                          onClick={() =>
+                            selectRoute(
+                              index
+                            )
+                          }
+                          className={`relative rounded-xl border px-2.5 py-2 text-left transition-all duration-200 ${
+                            active
+                              ? "border-blue-600 bg-blue-50 shadow-sm"
+                              : "border-slate-200 bg-white hover:border-blue-300"
+                          }`}
+                        >
+
+                          {active && (
+                            <span className="absolute right-1.5 top-1.5 text-[8px] font-black text-blue-600">
+                              ✓
+                            </span>
+                          )}
+
+                          <p
+                            className={`text-[9px] font-black ${
+                              active
+                                ? "text-blue-700"
+                                : "text-slate-800"
+                            }`}
+                          >
+                            Route{" "}
+                            {index +
+                              1}
+                          </p>
+
+                          <p className="mt-0.5 text-[8px] font-semibold text-slate-500">
+                            {
+                              formatDistance(
+                                routeItem.distanceMeters
+                              )
+                            }
+                          </p>
+
+                          <p className="text-[8px] text-slate-400">
+                            {
+                              formatDuration(
+                                routeItem.durationMillis
+                              )
+                            }
+                          </p>
+
+                        </button>
+                      );
+                    }
                   )}
 
                 </div>
 
-                <p className="mt-2 text-xs font-semibold text-slate-700">
-                  {
-                    formatDistance(
-                      Math.max(
-                        0,
-                        selectedNearbyPlace.progressMeters -
-                          currentRouteProgressMeters
-                      )
-                    )
-                  }{" "}
-                  ahead
-                </p>
-
-                <p className="mt-1 text-xs text-slate-500">
-                  {
-                    getApproximateStopTime(
-                      Math.max(
-                        0,
-                        selectedNearbyPlace.progressMeters -
-                          currentRouteProgressMeters
-                      )
-                    )
-                  }
-                </p>
-
-                {selectedNearbyPlace.vicinity && (
-                  <p className="mt-1 text-xs text-slate-500">
-                    {
-                      selectedNearbyPlace.vicinity
-                    }
-                  </p>
-                )}
-
               </div>
-            </InfoWindow>
-          )}
 
-        </GoogleMap>
+            )}
 
-        {/* ==================================================================
-            MAP HEADER
-            ================================================================== */}
+          </div>
 
-        <div className="pointer-events-none absolute left-4 right-4 top-4 z-20">
+        </aside>
 
-          <div className="rounded-2xl border border-slate-200 bg-white/95 p-2.5 shadow-xl backdrop-blur">
+        {/* ==============================================================
+            MAP
+            ============================================================== */}
 
-            <div className="grid grid-cols-3 gap-2">
+        <section className="relative min-h-0 flex-1 bg-slate-100">
 
-              <div className="rounded-xl bg-slate-50 px-3 py-2.5">
+          <GoogleMap
+            mapContainerStyle={
+              MAP_CONTAINER_STYLE
+            }
+            center={
+              mapCenter
+            }
+            zoom={14}
+            onLoad={
+              onMapLoad
+            }
+            onUnmount={
+              onMapUnmount
+            }
+            options={{
+              streetViewControl:
+                false,
 
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  Direction
-                </p>
+              mapTypeControl:
+                false,
 
-                <p className="mt-1 truncate text-sm font-bold text-slate-900">
+              fullscreenControl:
+                true,
+
+              clickableIcons:
+                true,
+
+              gestureHandling:
+                "greedy",
+            }}
+          >
+
+            {/* ==========================================================
+                DESTINATION MARKER
+                ========================================================== */}
+
+            <Marker
+              position={
+                destination
+              }
+              title={
+                place?.name ||
+                "Destination"
+              }
+            />
+
+            {/* ==========================================================
+                CURRENT LOCATION
+                ========================================================== */}
+
+            {isNavigating &&
+              position && (
+
+              <Marker
+                position={
+                  position
+                }
+                title="Your current location"
+                icon={{
+                  path:
+                    window.google
+                      ?.maps
+                      ?.SymbolPath
+                      ?.CIRCLE,
+
+                  scale: 8,
+
+                  fillColor:
+                    "#2563eb",
+
+                  fillOpacity: 1,
+
+                  strokeColor:
+                    "#ffffff",
+
+                  strokeWeight: 3,
+                }}
+              />
+
+            )}
+
+            {/* ==========================================================
+                IMPORTANT:
+                NO HIDDEN PLACE MARKERS / PURPLE DOTS
+                ========================================================== */}
+
+            {/* ==========================================================
+                ALTERNATIVE ROUTES
+                ========================================================== */}
+
+            {isNavigating &&
+              routes.map(
+                (
+                  routeItem,
+                  index
+                ) => {
+
+                  if (
+                    index ===
+                    selectedRoute
+                  ) {
+                    return null;
+                  }
+
+                  if (
+                    !routeItem.path ||
+                    routeItem.path.length <
+                      2
+                  ) {
+                    return null;
+                  }
+
+                  return (
+                    <Polyline
+                      key={`alternative-${index}`}
+                      path={
+                        routeItem.path
+                      }
+                      options={{
+                        strokeColor:
+                          "#94a3b8",
+
+                        strokeOpacity:
+                          0.42,
+
+                        strokeWeight:
+                          4,
+
+                        geodesic:
+                          true,
+
+                        zIndex: 4,
+                      }}
+                    />
+                  );
+                }
+              )}
+
+            {/* ==========================================================
+                SELECTED ROUTE
+                ========================================================== */}
+
+            {isNavigating &&
+              route?.path?.length >
+                1 && (
+
+              <Polyline
+                path={
+                  route.path
+                }
+                options={{
+                  strokeColor:
+                    "#2563eb",
+
+                  strokeOpacity:
+                    0.92,
+
+                  strokeWeight:
+                    6,
+
+                  geodesic:
+                    true,
+
+                  zIndex: 10,
+                }}
+              />
+
+            )}
+
+            {/* ==========================================================
+                INFO WINDOW
+                ========================================================== */}
+
+            {selectedPlace?.coordinates && (
+
+              <InfoWindow
+                position={
+                  selectedPlace.coordinates
+                }
+                onCloseClick={() =>
+                  setSelectedPlace(
+                    null
+                  )
+                }
+              >
+
+                <div className="min-w-[210px] max-w-[250px]">
+
+                  <div className="text-[10px] font-bold uppercase tracking-wide text-blue-600">
+
+                    {
+                      selectedPlace.categoryIcon
+                    }{" "}
+
+                    {
+                      selectedPlace.categoryLabel
+                    }
+
+                  </div>
+
+                  <h3 className="mt-1 text-sm font-bold text-slate-900">
+
+                    {
+                      selectedPlace.name
+                    }
+
+                  </h3>
+
+                  <p className="mt-1 text-xs leading-5 text-slate-500">
+
+                    {
+                      selectedPlace.conciseDescription ||
+                      selectedPlace.description
+                    }
+
+                  </p>
+
+                </div>
+
+              </InfoWindow>
+
+            )}
+
+          </GoogleMap>
+
+          {/* ============================================================
+              MAP TOP STATUS
+              ============================================================ */}
+
+          <div className="pointer-events-none absolute left-3 right-3 top-3 z-20">
+
+            <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-white/70 bg-white/95 px-3 py-2 shadow-lg backdrop-blur">
+
+              <span className="text-sm">
+                🏍️
+              </span>
+
+              <div className="min-w-0">
+
+                <p className="truncate text-[10px] font-black text-slate-800">
                   {
                     place?.name ||
-                    "Destination"
+                    "Bharatpur Journey"
+                  }
+                </p>
+
+                <p className="text-[8px] text-slate-400">
+
+                  {isNavigating
+                    ? `Route ${
+                        selectedRoute +
+                        1
+                      } • ${formatDistance(
+                        distanceToDestination
+                      )} left`
+                    : "Ready to explore"}
+
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* ============================================================
+              ACTIVE ROUTE
+              ============================================================ */}
+
+          {isNavigating &&
+            routes.length >
+              0 && (
+
+            <div className="absolute bottom-3 left-3 z-20">
+
+              <div className="rounded-xl border border-white/70 bg-white/95 px-3 py-2 shadow-lg backdrop-blur">
+
+                <div className="flex items-center gap-2">
+
+                  <span className="h-2 w-2 rounded-full bg-blue-600" />
+
+                  <span className="text-[9px] font-black text-slate-700">
+                    Route{" "}
+                    {selectedRoute +
+                      1}
+                  </span>
+
+                  <span className="text-[8px] text-slate-400">
+                    •
+                  </span>
+
+                  <span className="text-[9px] font-semibold text-slate-500">
+                    {
+                      formatDistance(
+                        route?.distanceMeters
+                      )
+                    }
+                  </span>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          )}
+
+          {/* ============================================================
+              OFF ROUTE
+              ============================================================ */}
+
+          {offRoute && (
+
+            <div className="absolute right-3 top-20 z-30">
+
+              <div className="rounded-xl bg-red-600 px-3 py-2 text-[9px] font-bold text-white shadow-lg">
+
+                Off route • Recalculating
+
+              </div>
+
+            </div>
+
+          )}
+
+          {/* ============================================================
+              NAVIGATION ERROR
+              ============================================================ */}
+
+          {navigationError && (
+
+            <div className="absolute bottom-3 right-3 z-30 max-w-[300px]">
+
+              <div className="rounded-xl border border-red-100 bg-white/95 px-3 py-2 shadow-lg backdrop-blur">
+
+                <p className="text-[9px] font-bold text-red-700">
+                  Navigation notice
+                </p>
+
+                <p className="mt-0.5 text-[9px] leading-4 text-red-600">
+                  {
+                    navigationError
                   }
                 </p>
 
               </div>
 
-              <div className="rounded-xl bg-slate-50 px-3 py-2.5">
-
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  Speed
-                </p>
-
-                <p className="mt-1 text-sm font-bold text-slate-900">
-                  {Number.isFinite(
-                    speed
-                  )
-                    ? `${speed.toFixed(
-                        0
-                      )} km/h`
-                    : "--"}
-                </p>
-
-              </div>
-
-              <div className="rounded-xl bg-slate-50 px-3 py-2.5">
-
-                <p className="text-[10px] font-semibold uppercase tracking-wide text-slate-400">
-                  ETA
-                </p>
-
-                <p className="mt-1 text-sm font-bold text-slate-900">
-                  {eta !== null
-                    ? `${eta} min`
-                    : "--"}
-                </p>
-
-              </div>
-
             </div>
 
-          </div>
+          )}
 
-        </div>
+        </section>
 
-        {/* ==================================================================
-            MAP LEGEND
-            ================================================================== */}
-
-        <div className="pointer-events-none absolute bottom-24 left-4 z-20 hidden md:block">
-
-          <div className="rounded-2xl border border-slate-200 bg-white/95 px-4 py-3 shadow-xl backdrop-blur">
-
-            <div className="flex items-center gap-3">
-
-              <div className="flex items-center gap-1">
-
-                <span className="h-3 w-3 rounded-full bg-blue-600 ring-2 ring-white" />
-
-                <span className="h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white" />
-
-                <span className="h-3 w-3 rounded-full bg-amber-500 ring-2 ring-white" />
-
-              </div>
-
-              <div>
-
-                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">
-                  Smart recommendations
-                </p>
-
-                <p className="mt-0.5 text-xs text-slate-600">
-                  Places found close to
-                  your active route
-                </p>
-
-              </div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-        {/* ==================================================================
-            Existing off-route message
-            ================================================================== */}
-
-        {offRoute && (
-          <div className="absolute left-4 right-4 top-24 z-30 md:left-auto md:w-[320px]">
-
-            <div className="rounded-xl bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-lg">
-              You are off route.
-              Recalculating...
-            </div>
-
-          </div>
-        )}
-
-        {/* ==================================================================
-            Existing navigation error
-            ================================================================== */}
-
-        {error && (
-          <div className="absolute bottom-4 left-4 right-4 z-30 md:left-auto md:w-[360px]">
-
-            <div className="rounded-xl bg-white/95 px-4 py-3 text-sm text-red-700 shadow-lg backdrop-blur">
-              {error}
-            </div>
-
-          </div>
-        )}
-
-      </section>
-
-    </div>
+      </div>
+    </>
   );
 }
