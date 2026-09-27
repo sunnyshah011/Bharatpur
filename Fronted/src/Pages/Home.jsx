@@ -20,7 +20,6 @@ import {
 
 import { useNavigate } from "react-router-dom";
 
-import image from "../assets/images/image.jpg";
 import narayani from "../assets/images/narayani2.jpeg";
 
 
@@ -32,7 +31,7 @@ const categories = [
   {
     title: "Nature",
     subtitle: "Wildlife, parks, rivers",
-    image: image,
+    image: "https://www.andbeyond.com/wp-content/uploads/sites/5/indian-elephant-chitwan-nepal.jpg",
     icon: PawPrint,
     iconBg: "bg-emerald-700",
     arrow: "text-emerald-700",
@@ -41,7 +40,7 @@ const categories = [
     title: "Wildlife",
     subtitle: "Safaris, bird watching",
     image:
-      "https://images.unsplash.com/photo-1535338454770-8be927b5a00b?auto=format&fit=crop&w=900&q=85",
+      "https://wwfasia.awsassets.panda.org/img/257812___4800_px_756570.jpg",
     icon: Mountain,
     iconBg: "bg-lime-700",
     arrow: "text-lime-700",
@@ -50,7 +49,7 @@ const categories = [
     title: "Culture",
     subtitle: "Temples, heritage, local life",
     image:
-      "https://images.unsplash.com/photo-1605640840605-14ac1855827b?auto=format&fit=crop&w=900&q=85",
+      "https://media.nepaltrekadventures.com/uploads/media/Chitwan/Tharu-culture.jpg",
     icon: Landmark,
     iconBg: "bg-amber-500",
     arrow: "text-amber-600",
@@ -59,7 +58,7 @@ const categories = [
     title: "Food",
     subtitle: "Local cuisine, restaurants",
     image:
-      "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=900&q=85",
+      "https://cdn.getyourguide.com/image/format=auto%2Cfit=crop%2Cgravity=auto%2Cquality=60%2Cwidth=375%2Cheight=375%2Cdpr=2/tour_img/4c47ff30a37892787447fc366bc211ae2841ade5dd007f3ddc366a4f5f5352b5.jpg",
     icon: Utensils,
     iconBg: "bg-red-500",
     arrow: "text-red-500",
@@ -77,7 +76,7 @@ const categories = [
     title: "Events",
     subtitle: "Festivals, fairs, activities",
     image:
-      "https://images.unsplash.com/photo-1594736797933-d0501ba2fe65?auto=format&fit=crop&w=900&q=85",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhEJVlyGeVw9DqhQIIN5_HnH3413HJJZ8X0YHlFVz-m2x_Fk5Q-su0Nz8q&s=10",
     icon: CalendarDays,
     iconBg: "bg-purple-600",
     arrow: "text-purple-600",
@@ -97,7 +96,7 @@ const popularPlaces = [
     rating: "4.8",
     reviews: "2.4k",
     image:
-      "https://images.unsplash.com/photo-1549366021-9f761d450615?auto=format&fit=crop&w=900&q=85",
+      "https://www.andbeyond.com/wp-content/uploads/sites/5/indian-elephant-chitwan-nepal.jpg",
   },
   {
     title: "Sunset View at Narayani River",
@@ -106,17 +105,17 @@ const popularPlaces = [
     location: "Bharatpur",
     rating: "4.6",
     reviews: "1.2k",
-    image:narayani
+    image: narayani
   },
   {
-    title: "Bharatpur Museum",
+    title: "Golaghat",
     description:
       "History, culture and local heritage",
     location: "Bharatpur",
     rating: "4.5",
     reviews: "892",
     image:
-      "https://images.unsplash.com/photo-1605640840605-14ac1855827b?auto=format&fit=crop&w=900&q=85",
+      "https://www.chitwanjungleguides.com/wp-content/uploads/2019/01/jeep-safari-in-chitwan-national-park.jpg",
   },
 ];
 
@@ -279,7 +278,7 @@ const Home = () => {
                 tracking-[-0.035em]
                 text-slate-950
                 sm:text-6xl
-                xl:text-[72px]
+                xl:text-[65px]
               "
             >
               Discover Bharatpur,
