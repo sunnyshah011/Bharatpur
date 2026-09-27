@@ -40,7 +40,7 @@ const CATEGORIES = [
   "Culture",
   "Food",
   "Homestays",
-  "Events",
+  // "Events",
   "Hidden Places",
 ];
 

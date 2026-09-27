@@ -7,7 +7,7 @@
       "googlePlaceId": "ChIJQ62jY-TulDkRxUfTb8UWiMc",
       "latitude": 27.5291,
       "longitude": 84.3542,
-      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Chitwan%20National%20Park(CNP).jpg",
+      "image": "https://english.dcnepal.com/wp-content/uploads/2023/06/shutterstockRF_667856146.jpg",
       "rating": 4.8,
       "reviews": 2400,
       "description": "A rich wildlife and nature experience with forests, wetlands, rivers, and opportunities for guided activities.",
@@ -330,6 +330,351 @@
         "nearby": "Sauraha • Jungle activities • Hotels",
         "review": "Beautiful river scenery and sunsets."
       }
+    },
+    {
+      "id": "meghauli-block",
+      "name": "Meghauli Block",
+      "nameNepali": "मेघौली ब्लक",
+      "location": "Meghauli, Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://cdn-zen.readytotrip.com/t/1024x768/content/40/9f/409f9168ca2a467e02a31b6f30a18dd14b52d17d.jpeg",
+      "wardNumbers": [
+        27,
+        28
+      ],
+      "distanceFromChaubiskothiKm": "25-35",
+      "directionFromChaubiskothi": "West",
+      "attractions": [
+        "Rhino Park",
+        "Golaghat",
+        "Bhojibaba",
+        "Shivalaya Park",
+        "Community Forests",
+        "Homestays",
+        "Museum"
+      ],
+      "category": [
+        "Hidden Places",
+        "Nature",
+        "Wildlife",
+        "Culture"
+      ],
+      "description": "A western Bharatpur tourism area featuring Rhino Park, Golaghat, community forests, homestays and local cultural attractions.",
+      "details": {
+        "bestFor": "Wildlife lovers, nature lovers, families, photographers",
+        "suggestedTime": "Half day to full day",
+        "cost": "Varies by attraction",
+        "nearby": "Meghauli • Chitwan National Park • Narayani River"
+      }
+    },
+    {
+      "id": "patihani-block",
+      "name": "Patihani Block",
+      "nameNepali": "पटिहानी ब्लक",
+      "location": "Patihani, Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://www.tusktravel.com/blog/wp-content/uploads/2023/02/Pokharas-Umbrella-Street-Nepal.jpg",
+      "wardNumbers": [
+        22
+      ],
+      "distanceFromChaubiskothiKm": "15",
+      "directionFromChaubiskothi": "South",
+      "attractions": [
+        "Umbrella Street",
+        "Kamal Pokhari",
+        "Stone Park"
+      ],
+      "category": [
+        "Hidden Places",
+        "Nature",
+        "Culture"
+      ],
+      "description": "A tourism area in southern Bharatpur known for Umbrella Street, Kamal Pokhari and Stone Park.",
+      "details": {
+        "bestFor": "Families, photographers, nature lovers",
+        "suggestedTime": "2-4 hours",
+        "cost": "Varies by attraction",
+        "nearby": "Patihani • Chitwan National Park"
+      }
+    },
+    {
+      "id": "devghat-block",
+      "name": "Devghat Block",
+      "nameNepali": "देवघाट ब्लक",
+      "location": "Devghat, Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "",
+      "wardNumbers": [
+        1
+      ],
+      "distanceFromChaubiskothiKm": "4-7",
+      "directionFromChaubiskothi": "North",
+      "attractions": [
+        "Beni Sangam",
+        "Ashrams",
+        "Bagheshwari Temples"
+      ],
+      "category": [
+        "Culture",
+        "Religion",
+        "Nature"
+      ],
+      "description": "A culturally and spiritually important area around Devghat featuring river confluences, ashrams and temples.",
+      "details": {
+        "bestFor": "Pilgrims, culture lovers, photographers",
+        "suggestedTime": "3-5 hours",
+        "cost": "Usually free",
+        "nearby": "Devghat Dham • Narayani River"
+      }
+    },
+    {
+      "id": "bishazari-tal",
+      "name": "Bishazari Tal",
+      "nameNepali": "बिसहजारी ताल",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": 27.6102,
+      "longitude": 84.4075,
+      "image": "https://commons.wikimedia.org/wiki/Special:Redirect/file/Bishazari%20Tal%20of%20Nepal.jpg",
+      "rating": 4.6,
+      "reviews": 850,
+      "wardNumbers": [
+        8
+      ],
+      "distanceFromChaubiskothiKm": "8",
+      "directionFromChaubiskothi": "Southeast",
+      "attractions": [
+        "Bishazari Tal"
+      ],
+      "category": [
+        "Hidden Places",
+        "Nature",
+        "Wildlife",
+        "Birdwatching"
+      ],
+      "description": "A beautiful wetland area famous for birdwatching, peaceful surroundings, forests, and natural scenery.",
+      "details": {
+        "bestFor": "Nature lovers, birdwatchers",
+        "suggestedTime": "2-3 hours",
+        "cost": "Check current local fees",
+        "nearby": "Restaurants • Hotels • Community forests",
+        "review": "A peaceful place for birdwatching."
+      }
+    },
+    {
+      "id": "gyaneshwar-block",
+      "name": "Gyaneshwar Block",
+      "nameNepali": "ज्ञानेश्वर ब्लक",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZiWkSEH-s78hQnYyOWl1k0roJh0ko8yj01Ac-oveIwO2VlKhnfkG_t8zB&s=10",
+      "wardNumbers": [
+        16
+      ],
+      "distanceFromChaubiskothiKm": "10-12",
+      "directionFromChaubiskothi": "West",
+      "attractions": [
+        "Community Forests",
+        "Picnic Spots",
+        "Mini Zoo",
+        "Cruise Safari"
+      ],
+      "category": [
+        "Hidden Places",
+        "Nature",
+        "Wildlife",
+        "Adventure"
+      ],
+      "description": "A western Bharatpur area featuring community forests, picnic destinations, a mini zoo and recreational safari experiences.",
+      "details": {
+        "bestFor": "Families, nature lovers, adventure seekers",
+        "suggestedTime": "3-5 hours",
+        "cost": "Varies by activity",
+        "nearby": "Community forests • Local picnic areas"
+      }
+    },
+    
+    {
+      "id": "paris-guest-house-bharatpur",
+      "name": "Paris Guest House Bharatpur",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCOv78k4Jbwt2f0JovqaM8gWAph_9o8IktRA-_qArwugunM2jrS4Lze1o&s=10",
+      "rating": 6.9,
+      "reviews": 83,
+      "description": "A guest-house style homestay option in Bharatpur with a garden, terrace, free Wi-Fi and free private parking.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Budget travelers, families, short stays",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur city • Local services",
+        "review": "Listed as a homestay in Bharatpur."
+      }
+    },
+    {
+      "id": "a-cube-homestay",
+      "name": "A Cube Homestay",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9wJkRQKtWAR-9O0CZ99YnRhCciiDerz6TTqvKANx0mw&s",
+      "rating": null,
+      "reviews": null,
+      "description": "A homestay accommodation option listed among homestays in Bharatpur, suitable for travelers looking for a local-style stay.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Budget travelers, local experience seekers",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur city",
+        "review": "Listed as a homestay in Bharatpur."
+      }
+    },
+
+    {
+      "id": "paris-guest-house-bharatpur",
+      "name": "Paris Guest House Bharatpur",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://cdn.esewahotels.com/hotels/cover-1726133058-2118983964.jpg",
+      "rating": 6.9,
+      "reviews": 83,
+      "description": "A guest-house style homestay option in Bharatpur with a garden, terrace, free Wi-Fi and free private parking.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Budget travelers, families, short stays",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur city • Local services",
+        "review": "Listed as a homestay in Bharatpur."
+      },
+      "imageSource": "eSewa Hotels",
+      "imageVerified": true
+    },
+    {
+      "id": "a-cube-homestay",
+      "name": "A Cube Homestay",
+      "location": "Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://images.unsplash.com/photo-1564501049412-61c2a3083791?auto=format&fit=crop&w=1200&q=80",
+      "rating": null,
+      "reviews": null,
+      "description": "A homestay accommodation option listed among homestays in Bharatpur, suitable for travelers looking for a local-style stay.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Budget travelers, local experience seekers",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur city",
+        "review": "Listed as a homestay in Bharatpur."
+      },
+      "imageSource": "Unsplash",
+      "imageVerified": false
+    },
+    {
+      "id": "mountain-lodge-bharatpur-9",
+      "name": "Mountain Lodge, Bharatpur-9",
+      "location": "Bharatpur-9, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?auto=format&fit=crop&w=1200&q=80",
+      "rating": null,
+      "reviews": null,
+      "description": "A lodging option listed among homestays in Bharatpur-9, suitable for travelers looking for an affordable local stay.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Budget travelers, short stays",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur-9 • Paras Bus Park",
+        "review": "Listed among Bharatpur homestay options."
+      },
+      "imageSource": "Unsplash",
+      "imageVerified": false
+    },
+    {
+      "id": "pujans-homestay",
+      "name": "Pujan's Homestay",
+      "location": "Katahar Chowk–Gautam Chowk Road, Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://images.unsplash.com/photo-1601918774946-25832a4be0d6?auto=format&fit=crop&w=1200&q=80",
+      "rating": null,
+      "reviews": null,
+      "description": "A Bharatpur homestay with free Wi-Fi and on-site parking, located close to Bharatpur Airport.",
+      "category": [
+        "Homestays",
+        "Accommodation"
+      ],
+      "details": {
+        "bestFor": "Airport travelers, budget travelers, short stays",
+        "suggestedTime": "1-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Bharatpur Airport • Bharatpur city",
+        "review": "Listed at Katahar Chowk–Gautam Chowk Road."
+      },
+      "imageSource": "Unsplash",
+      "imageVerified": false
+    },
+  
+    {
+      "id": "tharu-community-homestay-no-1",
+      "name": "Tharu Community Homestay No. 1",
+      "location": "Meghauli, Bharatpur, Chitwan, Nepal",
+      "googlePlaceId": "",
+      "latitude": null,
+      "longitude": null,
+      "image": "https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&w=1200&q=80",
+      "rating": null,
+      "reviews": null,
+      "description": "A Tharu community homestay in Meghauli offering an opportunity to experience village life, local culture, nature and community hospitality.",
+      "category": [
+        "Homestays",
+        "Culture",
+        "Nature"
+      ],
+      "details": {
+        "bestFor": "Culture lovers, nature lovers, families",
+        "suggestedTime": "2-3 nights",
+        "cost": "Check current rate",
+        "nearby": "Meghauli • Chitwan National Park",
+        "review": "The listing highlights community living and local cultural experience."
+      },
+      "imageSource": "Unsplash",
+      "imageVerified": false
     }
   ]
 }
