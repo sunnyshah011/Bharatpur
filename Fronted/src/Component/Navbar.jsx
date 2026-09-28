@@ -70,7 +70,7 @@ const Navbar = () => {
 
             {/* ================= DESKTOP / TOP BAR ================= */}
 
-            <div className="mx-auto flex h-[72px] max-w-[1500px] items-center justify-between px-5 lg:px-10">
+            <div className="mx-auto flex h-18 max-w-375 items-center justify-between px-5 lg:px-10">
 
                 {/* ================= LOGO ================= */}
 
@@ -137,7 +137,7 @@ const Navbar = () => {
                                 {item.name}
 
                                 {isActive && (
-                                    <span className="absolute bottom-0 left-3 right-3 h-[3px] rounded-full bg-emerald-700" />
+                                    <span className="absolute bottom-0 left-3 right-3 h-0.75 rounded-full bg-emerald-700" />
                                 )}
 
                             </Link>
